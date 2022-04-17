@@ -1,0 +1,17 @@
+.warning {
+    border: 1px solid red
+}
+
+.dangerText{
+color: red;
+
+padding: 2;
+
+
+margin-bottom: 10px;
+
+}
+
+.notDanger{
+    display: none;
+}
