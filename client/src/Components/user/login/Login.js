@@ -43,6 +43,15 @@ function Login() {
   // Timer 
 
   React.useEffect(() => {
+    let token = localStorage.getItem("userToken")
+    if (token) {
+     return navigate("/")
+    }
+  }, [])
+
+
+
+  React.useEffect(() => {
     const timer =
       counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
     if (counter === 0) {
@@ -260,12 +269,33 @@ function Login() {
   };
 
 
-  const responseGoogle = (response) => {
-    console.log(response);
+  const responseSuccesGoogle = (response) => {
+    console.log("google success :", response);
+    setOpen(!open);
+    axios
+      .post("http://localhost:3001/user/google/authentication", {
+
+        token: { tokenId: response.tokenId }
+      }).then((res) => {
+
+        console.log(res.data.status);
+        if (res.data.status) {
+
+          localStorage.setItem("userToken", res.data.userToken);
+          setOpen(false);
+          navigate("/");
+
+
+        }
+      })
+
+  }
+
+  const responseErrorGoogle = (response) => {
+    console.log("google error :", response);
   }
 
 
-alert(process.env.GOOGLE_CLIND_ID)
 
 
   return (
@@ -349,7 +379,7 @@ alert(process.env.GOOGLE_CLIND_ID)
                       number.
                     </p>
                   </div>
-                 
+
                   <div className="btn">
                     <button type="submit">SIGN IN</button>
                   </div>
@@ -429,15 +459,15 @@ alert(process.env.GOOGLE_CLIND_ID)
                       </DialogContent>
                     </Dialog>
                   </div>
-                  <div style={{display:"grid",marginTop:5,color:"black"}}>
-                  <GoogleLogin
-                 
-                    clientId={process.env.GOOGLE_CLIND_ID}
-                    buttonText="Login"
-                    onSuccess={responseGoogle}
-                    onFailure={responseGoogle}
-                    cookiePolicy={'single_host_origin'}
-                  />
+                  <div style={{ display: "grid", marginTop: 10, color: "black" }}>
+                    <GoogleLogin
+                      theme="dark"
+                      clientId="308398325326-d8vr61d3g6v4drv1r91hj5j13locln01.apps.googleusercontent.com"
+                      buttonText="SIGN IN WITH GOOGLE"
+                      onSuccess={responseSuccesGoogle}
+                      onFailure={responseErrorGoogle}
+                      cookiePolicy={'single_host_origin'}
+                    />
                   </div>
                 </form>
 

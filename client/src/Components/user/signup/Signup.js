@@ -14,8 +14,8 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Puff,Oval } from 'react-loading-icons'
-
+import { Puff, Oval } from 'react-loading-icons'
+import { GoogleLogin } from 'react-google-login';
 function Signup() {
   const { useState } = React;
   const navigate = useNavigate();
@@ -40,28 +40,37 @@ function Signup() {
 
   const [openOtp, setOpenOtp] = useState(false);
 
-  const [exist,setExist]=useState("")
+  const [exist, setExist] = useState("")
   const [counter, setCounter] = React.useState();
-   
-      // Timer 
-   
-    React.useEffect(() => {
-        const timer =
-        counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
-        if(counter ===0){
-          setExist("  OTP time out please try again")
-          setOpenOtp(false);
-        } 
-        return () => clearInterval(timer);
-    }, [counter]);
-    
-  
+
+
+  React.useEffect(() => {
+    let token = localStorage.getItem("userToken")
+    if (token) {
+      navigate("/")
+    }
+  }, [])
+
+
+  // Timer 
+
+  React.useEffect(() => {
+    const timer =
+      counter > 0 && setInterval(() => setCounter(counter - 1), 1000);
+    if (counter === 0) {
+      setExist("  OTP time out please try again")
+      setOpenOtp(false);
+    }
+    return () => clearInterval(timer);
+  }, [counter]);
+
+
 
   const handleClickOpen = () => {
- 
+
     setOpenOtp(true);
     setCounter(100)
-  
+
   };
 
   const handleClose = () => {
@@ -71,7 +80,7 @@ function Signup() {
     setOpen(!open);
   };
 
-  
+
 
   const handleCloseOtp = () => {
     setOpenOtp(false);
@@ -154,35 +163,35 @@ function Signup() {
     }
 
     if (!error) {
-       setOpen(!open);
-       axios
-       .post("http://localhost:3001/user/otp/request", {
-         Name,
-         Email,
-         Password,
-         mobileNumber,
-       })
-       .then((res) => {
-         
-         setOpen(false);
-     
-        
-          if(res.data.status==='exist'){
-          
-               setExist("  This user already exist")
-          }else if(res.data.status === "pending") {
-           setExist("")
-           console.log(JSON.stringify(res.data.user));
-           localStorage.setItem("userData", JSON.stringify(res.data.user));
-           handleClickOpen();
-         } else {
-           setExist("  OTP authentication is failed please try again")
-         
-         }
-        
-       });
+      setOpen(!open);
+      axios
+        .post("http://localhost:3001/user/otp/request", {
+          Name,
+          Email,
+          Password,
+          mobileNumber,
+        })
+        .then((res) => {
+
+          setOpen(false);
+
+
+          if (res.data.status === 'exist') {
+
+            setExist("  This user already exist")
+          } else if (res.data.status === "pending") {
+            setExist("")
+            console.log(JSON.stringify(res.data.user));
+            localStorage.setItem("userData", JSON.stringify(res.data.user));
+            handleClickOpen();
+          } else {
+            setExist("  OTP authentication is failed please try again")
+
+          }
+
+        });
     } else {
-     console.log('form full requerd')
+      console.log('form full requerd')
     }
   };
 
@@ -208,18 +217,47 @@ function Signup() {
         console.log(response);
 
         if (response.data.status) {
-      
+
 
           localStorage.clear("userData");
           localStorage.setItem("userToken", response.data.userToken);
-          
+
           navigate("/");
         } else {
-          
+
           setExist(" Entered otp code is incorrect please try again")
         }
       });
   };
+
+
+
+  const responseSuccesGoogle = (response) => {
+    console.log("google success :", response);
+    setOpen(!open);
+    axios
+      .post("http://localhost:3001/user/google/authentication", {
+
+        token: { tokenId: response.tokenId }
+      }).then((res) => {
+
+        console.log(res.data.status);
+        if (res.data.status) {
+
+          localStorage.setItem("userToken", res.data.userToken);
+          setOpen(false);
+          navigate("/");
+
+
+        }
+      })
+
+  }
+
+  const responseErrorGoogle = (response) => {
+    console.log("google error :", response);
+  }
+
 
   return (
     <>
@@ -246,9 +284,9 @@ function Signup() {
                 </div>
 
                 <form onSubmit={submitForm}>
-                     <p align="center" className={` ${exist ? "danger" : "nodanger"}`} style={{color:"red",paddingTop:5}}>
-                     <i className="fa fa-warning"></i> {exist}
-                    </p>
+                  <p align="center" className={` ${exist ? "danger" : "nodanger"}`} style={{ color: "red", paddingTop: 5 }}>
+                    <i className="fa fa-warning"></i> {exist}
+                  </p>
                   <div className="input_text">
                     <input
                       className={` ${nameErr ? "warning" : "nowarning"}`}
@@ -314,7 +352,7 @@ function Signup() {
                   </div>
 
                   <div className="btn">
-                    <button type="submit">Sign up</button>
+                    <button type="submit">SIGN UP</button>
                     <Dialog
                       fullWidth={fullWidth}
                       maxWidth={maxWidth}
@@ -337,7 +375,7 @@ function Signup() {
                           }}
                         >
                           <FormControl sx={{ mt: 2, minWidth: 120 }}>
-                          <Typography fontWeight={500} align="center" color='textSecondary'> Resend OTP in <span style={{color:"green",fontWeight:"bold"}}> 00:{counter}</span> </Typography>
+                            <Typography fontWeight={500} align="center" color='textSecondary'> Resend OTP in <span style={{ color: "green", fontWeight: "bold" }}> 00:{counter}</span> </Typography>
                             <p
                               className={otpErr ? "incorrect" : "correct"}
                               align="center"
@@ -368,9 +406,9 @@ function Signup() {
                                 seOtptErr(false);
                                 if (otp.length === 4) {
                                   handleCloseOtp();
-                                  
+
                                   submitCode(otp);
-                                 
+
                                 } else {
                                   console.log("not reached 4 character");
                                 }
@@ -381,21 +419,30 @@ function Signup() {
                               shouldAutoFocus
                             />
                           </FormControl>
-                      
+
                         </Box>
 
-                     
+
 
                       </DialogContent>
                     </Dialog>
                   </div>
+                  <div style={{ display: "grid", marginTop: 10, color: "black" }}>
+                    <GoogleLogin
+                      theme="dark"
+                      clientId="308398325326-d8vr61d3g6v4drv1r91hj5j13locln01.apps.googleusercontent.com"
+                      buttonText="SIGN UP WITH GOOGLE"
+                      onSuccess={responseSuccesGoogle}
+                      onFailure={responseErrorGoogle}
+                      cookiePolicy={'single_host_origin'}
+                    />
+                  </div>
                 </form>
 
-                <h3 className="signWith">Or Signup With</h3>
-                <div className="google">
+                {/* <div className="google">
                   <GoogleIcon className="googleIcon" />{" "}
                   <strong className="googletext">Signup With Google</strong>
-                </div>
+                </div> */}
 
                 <hr />
               </div>
@@ -408,7 +455,7 @@ function Signup() {
         open={open}
         onClick={handleClose}
       >
-           <Oval Height={"3em"} stroke="#06bcee" strokeOpacity={1} speed={1} strokeWidth={2} fillOpacity={1} fill={"rgba(0, 0, 0, 1)"} />
+        <Oval Height={"3em"} stroke="#06bcee" strokeOpacity={1} speed={1} strokeWidth={2} fillOpacity={1} fill={"rgba(0, 0, 0, 1)"} />
       </Backdrop>
     </>
   );

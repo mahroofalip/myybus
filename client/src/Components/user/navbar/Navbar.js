@@ -1,4 +1,4 @@
-import React,{useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -20,31 +20,49 @@ function Navbar() {
   const navigate = useNavigate();
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [email,setEmail]=useState("")
+  const [email, setEmail] = useState("")
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
+
     let token = localStorage.getItem("userToken")
-    var decoded = jwt_decode(token);
-     if(decoded.email)  setEmail(decoded.email)
-  },[email])
+    if(token){
+      var decoded = jwt_decode(token);
+      if (decoded.email) setEmail(decoded.email)
+    }else{
+      setEmail("")
+    }
+   
+   
+  }, [email])
+
+  
+  
 
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-  
-   
-
-  const navigateTo=(e)=>{
-    
-     if(e.target.innerText==='Account'){
-      navigate("/login");
-     }
-  }
  
+  const navigateTo = (e) => {
+
+    if (e.target.innerText === 'Account') {
+      navigate("/login");
+    }
+    
+   
+    if (e.target.innerText === "Logout") {
+     
+      localStorage.setItem("userToken","");
+      setEmail(false)
+  
+    }
+
+
+  }
+
 
 
 
@@ -57,12 +75,12 @@ function Navbar() {
 
             <h2 className="mybus">
               <span className="letterStyle">MYBUS</span>
-             
+
             </h2>
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
-            <span style={{marginRight:20}}>{email ? email : ""}</span>
+            <span style={{ marginRight: 20 }}>{email ? email : ""}</span>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="" />

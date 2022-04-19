@@ -4,12 +4,7 @@ sudo -u postgres psq
 CREATE DATABASE mybus;
 
 
-CREATE TABLE owners(
-   owner_id  SERIAL PRIMARY KEY ,
-   owner_name TEXT NOT NULL,
-   owner_email VARCHAR(50)  NOT NULL,
-   owner_password VARCHAR(100)  NOT NULL
- ) ;
+
 
  CREATE TABLE users(
    id  SERIAL PRIMARY KEY ,
@@ -19,8 +14,31 @@ CREATE TABLE owners(
    mobile VARCHAR(15) NOT NULL
  ) ;
 
+
+
+ --super admin 
+ CREATE TABLE superadmin(
+   id  SERIAL PRIMARY KEY ,
+   super_admin_email VARCHAR(50)  NOT NULL,
+   super_admin_password VARCHAR(100)  NOT NULL
+ ) ;
+
+
+
+CREATE TABLE owners(
+   owner_id  SERIAL PRIMARY KEY ,
+   owner_name TEXT NOT NULL,
+   owner_email VARCHAR(50)  NOT NULL,
+   owner_password VARCHAR(100)  NOT NULL,
+   blocked BOOLEAN NOT NULL,
+   mobile VARCHAR(15) NOT NULL,
+   company VARCHAR(50)  NOT NULL
+ ) ;
+
+
  CREATE TABLE busdetails(
    id SERIAL PRIMARY KEY ,
+   owner_id INT NOT NULL,
    busname TEXT NOT NULL,
    registernumber TEXT NOT NULL,
    busType VARCHAR(10) NOT NULL,
@@ -38,13 +56,6 @@ CREATE TABLE owners(
    image3 TEXT NOT NULL,
    image4 TEXT NOT NULL
   );
-
- --super admin 
- CREATE TABLE superadmin(
-   id  SERIAL PRIMARY KEY ,
-   super_admin_email VARCHAR(50)  NOT NULL,
-   super_admin_password VARCHAR(100)  NOT NULL
- ) ;
         
        
         

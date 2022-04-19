@@ -27,7 +27,7 @@ import { color, height } from "@mui/system";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import moment from 'moment'
-
+import jwt_decode from "jwt-decode";
 
 
 const Input = styled("input")({
@@ -108,9 +108,31 @@ const Editbus = () => {
   const [arrivDateErr, setArraivDateErr] = useState(false);
   const [arrivTimeErr, setArraivTimeErr] = useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-
+  const [email, setEmail] = useState("")
   const [open, setOpen] = useState(false)
   // const [editobj, dispath] = useReducer(setData, {})
+
+
+  const [owner_id,setOwnerid]=useState("");
+  useEffect(() => {
+
+    let token = localStorage.getItem("token")
+    if(token){
+      var decoded = jwt_decode(token);
+      if (decoded) {
+        setEmail(decoded.email)
+        setOwnerid(decoded.id)
+      }
+    }else{
+      setEmail("")
+      return navigate("/admin/login")
+    }
+   
+   
+  }, [email,owner_id])
+
+
+
 
   
 
@@ -165,19 +187,42 @@ const Editbus = () => {
     setAnchorElUser(null);
   };
 
+  // useEffect(() => {
+
+  //   let token = localStorage.getItem("token")
+  //   if(token){
+  //     var decoded = jwt_decode(token);
+  //     if (decoded.email) setEmail(decoded.email)
+  //   }else{
+  //     setEmail("")
+  //   }
+   
+   
+  // }, [email])
+
+
   const navigateTo = (e) => {
     if (e.target.innerText === "Account") {
-      navigate("/admin/login");
+      navigate("/admin/login")
+    }
+    
+    if (e.target.innerText === "Logout") {
+     
+      localStorage.setItem("token","");
+      setEmail(false)
+      navigate("/admin/login")
+  
     }
   };
-
+  
   const populateHome = () => {
     navigate("/admin/home");
   };
 
   const handlViewBus = () => {
-    navigate('/admin/viewbus')
+    navigate('/admin/viewbus/' + owner_id)
   }
+
 
 
 
@@ -404,7 +449,7 @@ const Editbus = () => {
         .then((res) => {
           setOpen(false);
           if (res.data.status) {
-            navigate('/admin/viewbus')
+            navigate('/admin/viewbus/' + owner_id)
           }
 
         });
@@ -440,6 +485,7 @@ const Editbus = () => {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
+            <span style={{ marginRight: 20,color:"#012169" }}>{email ? email : ""}</span>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />

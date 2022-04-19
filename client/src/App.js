@@ -14,6 +14,8 @@ import { BrowserRouter } from "react-router-dom";
 import Editbus from "./Components/admin/edit/Editbus";
 import Test from "../src/Components/Test"
 import { ConfirmProvider } from "material-ui-confirm";
+import ManageCompanies from "./Components/super-admin/manage_companies/Companies";
+import Displaybus from "./Components/super-admin/viewbuses/Displaybuses";
 function App() {
 
   return (
@@ -29,11 +31,13 @@ function App() {
         <Route path="/signup" element={<UserSignup />} />
         <Route path="/otp" element={<MaxWidthDialog />} />
         <Route path="/admin/addbus" element={<AddBus />} />
-        <Route path="/admin/viewbus" element={<ViewBus />} />
+        <Route path="/admin/viewbus/:ownerId" element={<ViewBus />} />
         <Route path="/super/admin/login" element={<SuperAdminLogin/>}/>
         <Route path="/super/admin/home" element={<SuperAdminHome/>}/>
+        <Route path="/super/admin/managecompanies" element={<ManageCompanies/>}/>
         <Route path="/admin/editbus/:busId" element={<Editbus/>}/>
-        <Route path="/test" element={<Test/>}/>
+        {/* <Route path="/test" element={<Test/>}/> */}
+        <Route path="/super/admin/viewbuses/:ownerId" element={<Displaybus/>}/>
       </Routes>
       </ConfirmProvider>
       </BrowserRouter>

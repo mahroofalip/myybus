@@ -16,6 +16,8 @@ const jwt = require("jsonwebtoken");
 const { response } = require("express");
 const { json } = require("body-parser");
 const cloudinary = require("cloudinary").v2;
+const { OAuth2Client } = require("google-auth-library")
+const clientgoogle = new OAuth2Client("308398325326-d8vr61d3g6v4drv1r91hj5j13locln01.apps.googleusercontent.com")
 
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
 const SERVICE_ID = process.env.SERVICE_ID;
@@ -51,17 +53,17 @@ app.post("/admin/signup", async function (req, res) {
     return res.json({ user: false });
   } else {
     const newUser = await db.get(
-      "INSERT INTO owners(owner_name, owner_email,owner_password) values($1,$2,$3) RETURNING *",
-      [req.body.Name, req.body.Email, hashedPassword]
+      "INSERT INTO owners(owner_name, owner_email,owner_password,blocked,mobile,company) values($1,$2,$3,$4,$5,$6) RETURNING *",
+      [req.body.Name, req.body.Email, hashedPassword, false, req.body.mobileNumber, req.body.company]
     );
 
-    const userName = newUser.rows[0].owner_name;
-    const userEmail = newUser.rows[0].owner_email;
+    const { owner_name, owner_email, owner_id } = newUser.rows[0];
 
     var token = jwt.sign(
       {
-        name: userName,
-        email: userEmail,
+        id: owner_id,
+        name: owner_name,
+        email: owner_email,
       },
       "secret123"
     );
@@ -85,12 +87,13 @@ app.post("/admin/Login", async (req, res) => {
     if (!validPassword) {
       return res.json({ user: 0 });
     } else {
-      const { owner_name, owner_email } = user.rows[0];
+      const { owner_name, owner_email, owner_id } = user.rows[0];
 
       var token = jwt.sign(
         {
-          email: owner_name,
-          name: owner_email,
+          id: owner_id,
+          name: owner_name,
+          email: owner_email,
         },
         "secret123"
       );
@@ -104,6 +107,7 @@ app.post("/admin/Login", async (req, res) => {
 
 //admin add bus
 app.post("/admin/addbus", async (req, res) => {
+  console.log(req.body);
   const permit = {
     image: req.body.permit,
   };
@@ -136,38 +140,40 @@ app.post("/admin/addbus", async (req, res) => {
   let image4_link = await cloudinary.uploader.upload(image4.image, {
     folder: "mybus",
   });
-  console.log(image1_link, 'imaaaaaaaaaaaaaaaage ');
+
   const newbus = await db.get(
-    "INSERT INTO busdetails(busname,registernumber,bustype,seats,fromstart,toend,duration,departuredate,departuretime,arraivaldate,arraivaltime,permit,image1,image2,image3,image4) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *",
-    [
-      req.body.busname,
-      req.body.registerNUmber,
-      req.body.busType,
-      req.body.seats,
-      req.body.from,
-      req.body.to,
-      req.body.duration,
-      req.body.depDate,
-      req.body.depTime,
-      req.body.arrivDate,
-      req.body.arrivTime,
-      permit_link.secure_url,
-      image1_link.secure_url,
-      image2_link.secure_url,
-      image3_link.secure_url,
-      image4_link.secure_url,
+    "INSERT INTO busdetails(owner_id,busname,registernumber,bustype,seats,fromstart,toend,duration,departuredate,departuretime,arraivaldate,arraivaltime,permit,image1,image2,image3,image4) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *",
+    [req.body.owner_id,
+    req.body.busname,
+    req.body.registerNUmber,
+    req.body.busType,
+    req.body.seats,
+    req.body.from,
+    req.body.to,
+    req.body.duration,
+    req.body.depDate,
+    req.body.depTime,
+    req.body.arrivDate,
+    req.body.arrivTime,
+    permit_link.secure_url,
+    image1_link.secure_url,
+    image2_link.secure_url,
+    image3_link.secure_url,
+    image4_link.secure_url,
     ]
   );
   console.log(newbus.rows[0], "this is the new bus");
   res.json({ status: true })
 });
+              
 
+app.post("/admin/getbuses", async (req, res) => { 
+  console.log("get bus fn called",req.body); 
+  let result = await db.get("select * from busdetails WHERE owner_id = $1", [req.body.ownerId])
 
-app.get("/admin/getbuses", async (req, res) => {
-  console.log("get bus fn called");
-  let result = await db.get("select * from busdetails")
+  console.log(result.rows);
   if (result.rows) {
-    console.log(result.rows);
+   
     res.json({ result: result.rows })
   } else {
     console.log('no buses in db');
@@ -180,7 +186,7 @@ app.get("/admin/getbuses", async (req, res) => {
 })
 // admin edit bus
 app.post('/admin/editbus', async (req, res) => {
-  console.log('///}}}}}}}}}}}}}}}}}}}}]', req.body.busId);
+
   let bus = await db.get(
     `select * from busdetails where "id" ='${req.body.busId}'`
   );
@@ -206,7 +212,7 @@ app.put('/admin/editsubmit', async (req, res) => {
   console.log(req.body.image4.length);
 
 
-    // if not image for update
+  // if not image for update
   if (req.body.permit.length < 100 && req.body.image1.length < 100 && req.body.image2.length < 100 && req.body.image3.length < 100 && req.body.image4.length < 100) {
 
     const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
@@ -223,10 +229,10 @@ app.put('/admin/editsubmit', async (req, res) => {
       req.body.arrivTime,
       req.body.id])
 
-     return res.json({status: true})
+    return res.json({ status: true })
   }
-    // if permit image for update
-  if(req.body.permit.length>100){
+  // if permit image for update
+  if (req.body.permit.length > 100) {
 
     const permit = {
       image: req.body.permit,
@@ -251,7 +257,7 @@ app.put('/admin/editsubmit', async (req, res) => {
       permit_link.secure_url,
       req.body.id])
 
-  }else{
+  } else {
 
     const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
       [req.body.busname,
@@ -266,11 +272,11 @@ app.put('/admin/editsubmit', async (req, res) => {
       req.body.arrivDate,
       req.body.arrivTime,
       req.body.id])
-    
+
   }
 
-   // if image1 for update
-   if(req.body.image1.length>100){
+  // if image1 for update
+  if (req.body.image1.length > 100) {
 
     const permit = {
       image: req.body.image1,
@@ -283,7 +289,7 @@ app.put('/admin/editsubmit', async (req, res) => {
     const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image1=$12  WHERE id = $13 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
-      req.body.busType,  
+      req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
@@ -295,7 +301,7 @@ app.put('/admin/editsubmit', async (req, res) => {
       link.secure_url,
       req.body.id])
 
-  }else{
+  } else {
 
     const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
       [req.body.busname,
@@ -312,154 +318,154 @@ app.put('/admin/editsubmit', async (req, res) => {
       req.body.id])
 
   }
-// if image 2
+  // if image 2
 
-if(req.body.image2.length>100){
+  if (req.body.image2.length > 100) {
 
-  const permit = {
-    image: req.body.image2,
-  };
+    const permit = {
+      image: req.body.image2,
+    };
 
-  let link = await cloudinary.uploader.upload(permit.image, {
-    folder: "mybus",
-  });
+    let link = await cloudinary.uploader.upload(permit.image, {
+      folder: "mybus",
+    });
 
-  const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image2=$12  WHERE id = $13 RETURNING *',
-    [req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType,  //permit,image1,image2,image3,image4
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    link.secure_url,
-    req.body.id])
+    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image2=$12  WHERE id = $13 RETURNING *',
+      [req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,  //permit,image1,image2,image3,image4
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.duration,
+      req.body.depDate,
+      req.body.depTime,
+      req.body.arrivDate,
+      req.body.arrivTime,
+      link.secure_url,
+      req.body.id])
 
-}else{
+  } else {
 
-  const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
-    [req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType,
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    req.body.id])
+    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+      [req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.duration,
+      req.body.depDate,
+      req.body.depTime,
+      req.body.arrivDate,
+      req.body.arrivTime,
+      req.body.id])
 
-}
-//if  image3
-if(req.body.image3.length>100){
+  }
+  //if  image3
+  if (req.body.image3.length > 100) {
 
-  const permit = {
-    image: req.body.image3,
-  };
+    const permit = {
+      image: req.body.image3,
+    };
 
-  let link = await cloudinary.uploader.upload(permit.image, {
-    folder: "mybus",
-  });
+    let link = await cloudinary.uploader.upload(permit.image, {
+      folder: "mybus",
+    });
 
-  const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image3=$12  WHERE id = $13 RETURNING *',
-    [req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType,  //permit,image1,image2,image3,image4
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    link.secure_url,
-    req.body.id])
+    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image3=$12  WHERE id = $13 RETURNING *',
+      [req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,  //permit,image1,image2,image3,image4
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.duration,
+      req.body.depDate,
+      req.body.depTime,
+      req.body.arrivDate,
+      req.body.arrivTime,
+      link.secure_url,
+      req.body.id])
 
-}else{
+  } else {
 
-  const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
-    [req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType,
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    req.body.id])
+    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+      [req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.duration,
+      req.body.depDate,
+      req.body.depTime,
+      req.body.arrivDate,
+      req.body.arrivTime,
+      req.body.id])
 
-}
+  }
 
-//if image4
-if(req.body.image4.length>100){
+  //if image4
+  if (req.body.image4.length > 100) {
 
-  const permit = {
-    image: req.body.image4,
-  };
+    const permit = {
+      image: req.body.image4,
+    };
 
-  let link = await cloudinary.uploader.upload(permit.image, {
-    folder: "mybus",
-  });
+    let link = await cloudinary.uploader.upload(permit.image, {
+      folder: "mybus",
+    });
 
-  const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image4=$12  WHERE id = $13 RETURNING *',
-    [req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType, 
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    link.secure_url,
-    req.body.id])
+    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image4=$12  WHERE id = $13 RETURNING *',
+      [req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.duration,
+      req.body.depDate,
+      req.body.depTime,
+      req.body.arrivDate,
+      req.body.arrivTime,
+      link.secure_url,
+      req.body.id])
 
-}else{
+  } else {
 
-  const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
-    [req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType,
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    req.body.id])
+    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+      [req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.duration,
+      req.body.depDate,
+      req.body.depTime,
+      req.body.arrivDate,
+      req.body.arrivTime,
+      req.body.id])
 
-}
+  }
 
 
-return res.json({status : true})
+  return res.json({ status: true })
 
-  
+
 
 })
 
 // deleter bus
 
-app.delete('/admin/deletebus/:id', (req,res)=>{
-  console.log('THISIS DELETE FUNCTION ',req.params.id);
- 
-    db.get('DELETE FROM busdetails WHERE id = $1', [req.params.id])
-    
-    res.json({status: true})
-   
+app.delete('/admin/deletebus/:id', (req, res) => {
+  console.log('THISIS DELETE FUNCTION ', req.params.id);
+
+  db.get('DELETE FROM busdetails WHERE id = $1', [req.params.id])
+
+  res.json({ status: true })
+
 })
 
 
@@ -469,35 +475,35 @@ app.delete('/admin/deletebus/:id', (req,res)=>{
 
 
 
-app.post("/user/otp/request", async(req, res) => {
+app.post("/user/otp/request", async (req, res) => {
   console.log('//////////');
- let exitst= await db.get('SELECT * FROM users WHERE email = $1',[req.body.Email])
+  let exitst = await db.get('SELECT * FROM users WHERE email = $1', [req.body.Email])
 
- if(exitst.rows[0]){
-   console.log("user exist ",exitst.rows[0]);
-   return res.json({status:"exist"})
- }else{
-  console.log("user not exist ",exitst.rows[0]);
-  client.verify
-  .services(SERVICE_ID)
-  .verifications.create({
-    to: `+91${req.body.mobileNumber}`,
-    channel: "sms",
-  })
-  .then((response) => {
-       return res.status(200).json({ status: response.status, user: req.body });
-  })
-  .catch((err) => {
-    console.log(err);
-    console.log("somthig wrong ...");
-    
-  });
- 
- 
+  if (exitst.rows[0]) {
+    console.log("user exist ", exitst.rows[0]);
+    return res.json({ status: "exist" })
+  } else {
+    console.log("user not exist ", exitst.rows[0]);
+    client.verify
+      .services(SERVICE_ID)
+      .verifications.create({
+        to: `+91${req.body.mobileNumber}`,
+        channel: "sms",
+      })
+      .then((response) => {
+        return res.status(200).json({ status: response.status, user: req.body });
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log("somthig wrong ...");
 
- }
-   
-  
+      });
+
+
+
+  }
+
+
 });
 
 app.post("/user/otp/verify", (req, res) => {
@@ -525,13 +531,13 @@ app.post("/user/otp/verify", (req, res) => {
           ]
         );
         console.log("FORM SUCCESSFULLY SUBMITTED");
-        const id= newUser.rows[0].id
+        const id = newUser.rows[0].id
         const userName = newUser.rows[0].name;
         const userEmail = newUser.rows[0].email;
 
         var token = jwt.sign(
-          { 
-            id:id,
+          {
+            id: id,
             name: userName,
             email: userEmail,
           },
@@ -551,28 +557,28 @@ app.post("/user/otp/verify", (req, res) => {
 
 // user login
 
-app.post('/user/Login',async(req,res)=>{
+app.post('/user/Login', async (req, res) => {
 
   console.log(req.body);
-  let user= await db.get('SELECT * FROM users WHERE email = $1',[req.body.Email])
+  let user = await db.get('SELECT * FROM users WHERE email = $1', [req.body.Email])
   console.log(user.rows[0]);
 
-  if(user.rows[0]){
+  if (user.rows[0]) {
 
     const validPassword = await bcrypt.compare(
       req.body.Password,
       user.rows[0].password
     );
 
-     if(validPassword){
+    if (validPassword) {
 
-      const id= user.rows[0].id
+      const id = user.rows[0].id
       const userName = user.rows[0].name;
       const userEmail = user.rows[0].email;
 
       var token = jwt.sign(
-        { 
-          id:id,
+        {
+          id: id,
           name: userName,
           email: userEmail,
         },
@@ -583,53 +589,53 @@ app.post('/user/Login',async(req,res)=>{
 
 
 
-     
-     }else{
-      res.json({status:0})
-     }
 
-   
-  }else{
-    res.json({status:false})
+    } else {
+      res.json({ status: 0 })
+    }
+
+
+  } else {
+    res.json({ status: false })
   }
 
 
 })
 
-app.post('/user/otp/Login',async(req,res)=>{
- 
+app.post('/user/otp/Login', async (req, res) => {
+
   console.log(req.body);
-  let user= await db.get('SELECT * FROM users WHERE mobile = $1',[req.body.mobileNumber])
+  let user = await db.get('SELECT * FROM users WHERE mobile = $1', [req.body.mobileNumber])
   console.log(user.rows[0]);
 
-  if(user.rows[0]){
-   
+  if (user.rows[0]) {
+
     client.verify
-    .services(SERVICE_ID)
-    .verifications.create({
-      to: `+91${user.rows[0].mobile}`,
-      channel: "sms",
-    })
-    .then((response) => {
+      .services(SERVICE_ID)
+      .verifications.create({
+        to: `+91${user.rows[0].mobile}`,
+        channel: "sms",
+      })
+      .then((response) => {
 
-         return res.status(200).json({ status: response.status, user: req.body });
-    })
-    .catch((err) => {
-      console.log(err);
-      console.log("somthig wrong ...");
-      
-    });
+        return res.status(200).json({ status: response.status, user: req.body });
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log("somthig wrong ...");
 
-   
-  }else{
-    res.json({status:false})
+      });
+
+
+  } else {
+    res.json({ status: false })
   }
 
 
 })
 
 
-app.post('/user/otp/login/verify',(req,res)=>{
+app.post('/user/otp/login/verify', (req, res) => {
   console.log(req.body);
 
   client.verify
@@ -642,16 +648,16 @@ app.post('/user/otp/login/verify',(req,res)=>{
       console.log(verification);
       if (verification.valid) {
 
-        let user= await db.get('SELECT * FROM users WHERE mobile = $1',[req.body.MOB])
-       
+        let user = await db.get('SELECT * FROM users WHERE mobile = $1', [req.body.MOB])
+
         console.log("FORM SUCCESSFULLY SUBMITTED");
-        const id= user.rows[0].id
+        const id = user.rows[0].id
         const userName = user.rows[0].name;
         const userEmail = user.rows[0].email;
 
         var token = jwt.sign(
-          { 
-            id:id,
+          {
+            id: id,
             name: userName,
             email: userEmail,
           },
@@ -663,7 +669,7 @@ app.post('/user/otp/login/verify',(req,res)=>{
         return res.json({ status: false, Error: "Invalid otp" });
       }
     });
-  
+
 
 
 
@@ -676,6 +682,110 @@ app.post('/user/otp/login/verify',(req,res)=>{
 
 
 
+app.post('/user/google/authentication', (req, res) => {
+
+  let idToken = req.body.token.tokenId
+
+
+
+  clientgoogle.verifyIdToken({ idToken, audience: "308398325326-d8vr61d3g6v4drv1r91hj5j13locln01.apps.googleusercontent.com" }).then(async (response) => {
+
+
+
+    const { email_verified, name, email } = response.payload
+
+    console.log('name :', name, "  emailverified   :", email_verified, " email    :", email);
+
+    if (email_verified) {
+      let user = await db.get('SELECT * FROM users WHERE email = $1', [email])
+      if (user.rows[0]) {
+        const id = user.rows[0].id
+        const userName = user.rows[0].name;
+        const userEmail = user.rows[0].email;
+
+        var token = jwt.sign(
+          {
+            id: id,
+            name: userName,
+            email: userEmail,
+          },
+          "secret123"
+        );
+        return res.json({ status: true, userToken: token });
+      } else {
+        let password = email + process.env.JWT_SIGNIN_KEY
+        console.log('pwd   :', password);
+        let newUserName = name
+        let newUserEmail = email
+
+
+        let hashedUserPassword = await bcrypt.hash(password, 10);
+        const newUser = await db.get(
+          "INSERT INTO users(name,email,password,mobile) values($1,$2,$3,$4) RETURNING *",
+          [
+            newUserName,
+            newUserEmail,
+            hashedUserPassword,
+            "not updated",
+          ]
+        );
+
+        const id = newUser.rows[0].id
+        const userName = newUser.rows[0].name;
+        const userEmail = newUser.rows[0].email;
+
+        var token = jwt.sign(
+          {
+            id: id,
+            name: userName,
+            email: userEmail,
+          },
+          "secret123"
+        );
+        return res.json({ status: true, userToken: token });
+
+      }
+
+
+    }
+
+
+  })
+
+
+
+})
+
+
+
+
+
+app.post('/user/bus/search',async(req,res)=>{
+let { date,to,from}=req.body
+
+   console.log(date,to,from);
+
+   let allbuses = await db.get("select * from busdetails")
+   let result=allbuses.rows
+   let filtered= await result.map((bus)=>{
+  
+    if(bus.fromstart===from && bus.toend===to && bus.departuredate===date){
+      return bus  
+    }
+
+   })
+    
+      
+
+   
+    
+
+
+
+
+})
+
+      
 
 
 
@@ -686,13 +796,6 @@ app.post('/user/otp/login/verify',(req,res)=>{
 
 
 
-
-
-
-
-
-
-         
 //super admin section
 
 app.post('/super/admin/Login', async (req, res) => {
@@ -701,7 +804,7 @@ app.post('/super/admin/Login', async (req, res) => {
   console.log(result);
   if (!result.rows[0]) {
     console.log('new super admin')
-    console.log('super user login',req.body);
+    console.log('super user login', req.body);
     let hashedPassword = await bcrypt.hash(req.body.Password, 10);
     console.log('hashed password', hashedPassword)
     const newUser = await db.get(
@@ -709,14 +812,14 @@ app.post('/super/admin/Login', async (req, res) => {
       [
         req.body.Email,
         hashedPassword
-   
+
       ]
     );
-      console.log(newUser);
-  
+    console.log(newUser);
+
     const userName = newUser.rows[0].super_admin_email;
     const userEmail = newUser.rows[0].super_admin_password;
-   
+
     var token = jwt.sign(
       {
         name: userName,
@@ -726,7 +829,7 @@ app.post('/super/admin/Login', async (req, res) => {
     );
     return res.json({ status: true, superAdminToken: token });
   } else {
-  console.log('not new super admin')
+    console.log('not new super admin')
 
     const validPassword = await bcrypt.compare(
       req.body.Password,
@@ -746,13 +849,64 @@ app.post('/super/admin/Login', async (req, res) => {
         "secret123"
       );
 
-     return res.json({ status: true, superAdminToken: token });
+      return res.json({ status: true, superAdminToken: token });
     }
   }
 
 })
 
 
+app.get('/super/admin/getcompanies', async (req, res) => {
+
+     
+
+
+
+   let result =await db.get('select * from owners')
+   console.log(result.rows);
+  let owner = []
+
+  owner = await result.rows.map((row)=>{
+
+    let obj={ id:row.owner_id,
+      blocked: row.blocked,
+      company:row.company,
+      mobile: row.mobile,
+      owner_email:row.owner_email,
+      owner_name:row.owner_name,
+      owner_password:row.owner_password
+      }
+     return obj
+   
+  
+   })
+
+
+
+
+
+
+  
+
+
+
+  // let result = await db.get(`SELECT * 
+  // FROM "owners" 
+  // JOIN "busdetails" ON "owners"."owner_id" = "busdetails"."owner_id"`)
+   
+  res.json({result:owner})
+
+})
+
+
+
+
+app.post('/super/admin/viewbuses',async(req,res)=>{
+  console.log('[[[[[[[[[[[[[[4444]]]]]]]]]]]]]]]]]',req.body);
+  let result =await db.get('select * from busdetails  WHERE owner_id = $1', [req.body.ownerId])
+  res.json({buses:result.rows})
+
+})
 
 
 

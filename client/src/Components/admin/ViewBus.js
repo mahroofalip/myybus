@@ -27,6 +27,9 @@ import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useConfirm } from "material-ui-confirm";
+import jwt_decode from "jwt-decode";
+import { useParams } from "react-router-dom";
+
 const settings = ["Profile", "Account", "Logout"];
 
 
@@ -89,9 +92,10 @@ function ViewBus() {
   const [records, setRecords] = useState();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openLoder, setOpensLoder] = useState(false)
-
+  const [email, setEmail] = useState("")
+  const [id,setId]=useState("");
   const openOpt = Boolean(anchorEl);
-
+  const { ownerId } = useParams()
 
   const deleteBus = () => {
          
@@ -168,17 +172,18 @@ function ViewBus() {
   ];
 
 
-
-
-
+ 
 
   useEffect(() => {
-    axios.get("http://localhost:3001/admin/getbuses").then((res) => {
-      console.log("get bus function ");
+
+   
+    axios.post("http://localhost:3001/admin/getbuses",{ownerId}).then((res) => {
+   
       setRecords(res.data.result);
     });
   },[records]);
 
+console.log('qqqqqqqqqqqqqqqqqqqqqq',records);
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -190,10 +195,39 @@ function ViewBus() {
     setAnchorElUser(null);
   };
 
+
+  useEffect(() => {
+
+    let token = localStorage.getItem("token")
+    if(token){
+      var decoded = jwt_decode(token);
+      console.log("--------------------++----",decoded);
+      if (decoded.email) setEmail(decoded.email)
+    }else{
+      setEmail("")
+      return navigate("/admin/login")
+    }
+  }, [email])
+
+
   const navigateTo = (e) => {
     if (e.target.innerText === "Account") {
-      navigate("/admin/login");
+      navigate("/admin/login")
     }
+    
+    if (e.target.innerText === "Logout") {
+     
+      localStorage.setItem("token","");
+      setEmail(false)
+      navigate("/admin/login")
+  
+    }
+  };
+  
+
+
+  const populateHome = () => {
+    navigate("/admin/home");
   };
 
   const handleAddBus = () => {
@@ -203,30 +237,6 @@ function ViewBus() {
 
 
 
-  //  useEffect(()=>{
-  //   let response=records.map((record)=>{
-  //     return {id:record.id,busname:record.busname,regnumber:record.registernumber,bustype:record.bustype,seats:record.seats,}
-  //  }) 
-  //  response.push(rows)
-
-  //  },[])
-
-
-
-
-
-  // const handleSearch = (e) => {
-  //   let target = e.target;
-  //   setFilterFn({
-  //     fn: (items) => {
-  //       if (target.value === "") return items;
-  //       else
-  //         return items.filter((x) =>
-  //           x.fullName.toLowerCase().includes(target.value)
-  //         );
-  //     },
-  //   });
-  // };
 
   return (
     <>
@@ -254,6 +264,7 @@ function ViewBus() {
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
+            <span style={{ marginRight: 20,color:"#012169" }}>{email ? email : ""}</span>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />
@@ -291,7 +302,7 @@ function ViewBus() {
           container
           spacing={2}
         >
-          <Grid
+          <Grid onClick={populateHome}
             className="tab"
             sx={{
               color: "#fff",

@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -14,13 +14,36 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
-
+import jwt_decode from "jwt-decode";
 const settings = ["Profile", "Account", "Logout"];
 
 const AdminHome = () => {
   const navigate = useNavigate();
-
+  const [email, setEmail] = useState("")
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [owner_id,setOwnerid]=useState("");
+  useEffect(() => {
+
+    let token = localStorage.getItem("token")
+    if(token){
+      var decoded = jwt_decode(token);
+      if (decoded) {
+        setEmail(decoded.email)
+        setOwnerid(decoded.id)
+      }
+    }else{
+      setEmail("")
+      return navigate("/admin/login")
+    }
+   
+   
+  }, [email,owner_id])
+
+
+
+
+
+
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -30,18 +53,37 @@ const AdminHome = () => {
     setAnchorElUser(null);
   };
 
+
+  
+
   const navigateTo = (e) => {
     if (e.target.innerText === "Account") {
-      navigate("/admin/login");
+      navigate("/admin/login")
+    }
+    
+    if (e.target.innerText === "Logout") {
+     
+      localStorage.setItem("token","");
+      setEmail(false)
+      navigate("/admin/login")
+  
     }
   };
+  
 
 const handleAddBus=()=>{
   navigate('/admin/addbus')
 }
-const handlViewBus=()=>{
-  navigate('/admin/viewbus')
+const handlViewBus = () => {
+  navigate('/admin/viewbus/' + owner_id)
 }
+
+
+
+
+
+
+
 
 
 
@@ -61,6 +103,7 @@ const handlViewBus=()=>{
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
+            <span style={{ marginRight: 20,color:"#012169" }}>{email ? email : ""}</span>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />

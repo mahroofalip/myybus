@@ -26,7 +26,7 @@ import axios from "axios";
 import { color, height } from "@mui/system";
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import jwt_decode from "jwt-decode";
 const Input = styled("input")({
   display: "none",
 });
@@ -100,9 +100,9 @@ const [image1privew, setimage1privew] = useState("");
   const [image3Err, setImage3Err] = useState(false);
   const [image4Err, setImage4Err] = useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
- 
-  const [open, setOpen] = useState(false)
-   
+  const [owner_id,setOwnerid]=useState("");
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState("")
   const clearForm=()=>{
     setBusname("")
     setRegisterNUmber("")
@@ -127,6 +127,8 @@ const [image1privew, setimage1privew] = useState("");
     setimage4privew("")
   }
   
+ 
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -165,18 +167,59 @@ const [image1privew, setimage1privew] = useState("");
     setAnchorElUser(null);
   };
 
+
+  // useEffect(() => {
+
+  //   let token = localStorage.getItem("token")
+  //   if(token){
+  //     var decoded = jwt_decode(token);
+  //     if (decoded)  
+  //   }
+   
+   
+  // }, [owner_id])
+  
+
+
+  useEffect(() => {
+
+    let token = localStorage.getItem("token")
+    if(token){
+      var decoded = jwt_decode(token);
+      if (decoded) {
+        setEmail(decoded.email)
+        setOwnerid(decoded.id)
+      }
+    }else{
+      setEmail("")
+      return navigate("/admin/login")
+     
+    }
+   
+   
+  }, [email,owner_id])
+
+
   const navigateTo = (e) => {
     if (e.target.innerText === "Account") {
-      navigate("/admin/login");
+      navigate("/admin/login")
+    }
+    
+    if (e.target.innerText === "Logout") {
+     
+      localStorage.setItem("token","");
+      setEmail(false)
+      navigate("/admin/login")
+  
     }
   };
-
+  
   const populateHome = () => {
     navigate("/admin/home");
   };
 
   const handlViewBus = () => {
-    navigate('/admin/viewbus')
+    navigate('/admin/viewbus/' + owner_id)
   }
 
 
@@ -393,12 +436,14 @@ const [image1privew, setimage1privew] = useState("");
 
       console.log("not submit field required");
     } else {
-
+    
+     
 
       setOpen(!open);
 
       axios
         .post("http://localhost:3001/admin/addbus", {
+          owner_id,
           busname,
           registerNUmber,
           busType,
@@ -419,7 +464,7 @@ const [image1privew, setimage1privew] = useState("");
         .then((res) => {
           setOpen(false);
           if (res.data.status) {
-            navigate('/admin/viewbus')
+            navigate('/admin/viewbus/' + owner_id)
           }
 
         });
@@ -453,6 +498,7 @@ const [image1privew, setimage1privew] = useState("");
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
+            <span style={{ marginRight: 20,color:"#012169" }}>{email ? email : ""}</span>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />

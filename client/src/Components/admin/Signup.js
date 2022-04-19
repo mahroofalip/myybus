@@ -8,14 +8,19 @@ function Signup() {
   const { useState } = React;
 
   const [Name, setName] = useState("");
+  const [company,setCompanyName]=useState("")
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
   const [nameErr, setNameErr] = useState(false);
+  const [companyNameErr,setCompanyNameErr]=useState("")
   const [emailErr, setEmailErr] = useState(false);
   const [PasswordErr, setPasswordErr] = useState(false);
-
+  const [mobileNumber, setMobileNumber] = useState("");
   const [eye, seteye] = useState(true);
   const [pass, setpass] = useState("password");
+  const [mobileErr, setMobileErr] = useState(false);
+  const [mobileValidErr, setmobileValidErr] = useState(false);
+  const [exist, setExist] = useState("")
   console.log(Email, Name, Password);
   console.log(Name, Email, Password);
 
@@ -28,7 +33,12 @@ function Signup() {
     if (name === "name") {
       setName(value);
     }
-
+    if (name === "company") {
+      setCompanyName(value);
+    }
+    if (name === "mobile") {
+      setMobileNumber(value);
+    }
     if (name === "password") {
       setPassword(value);
     }
@@ -38,10 +48,10 @@ function Signup() {
 
   const submitForm = (e) => {
     e.preventDefault();
-
+   let error = false;
     if (Name.length < 1) {
       setNameErr(true);
-
+    error=true
     } else {
       setNameErr(false);
       setEmailErr(true);
@@ -49,30 +59,58 @@ function Signup() {
 
     if (Name === "") {
       setNameErr(true);
+      error=true
     } else {
       setNameErr(false);
     }
+    if(company==="")
 
     if (Email.length < 1) {
       setEmailErr(true);
+      error=true
     } else {
       setEmailErr(false);
     }
 
     if (Email === "") {
       setEmailErr(true);
+      error=true
     } else {
       setEmailErr(false);
     }
+
+    if (mobileNumber === "") {
+      setMobileErr(true);
+      setmobileValidErr(false);
+      error = true;
+    } else {
+      setMobileErr(false);
+      if (mobileNumber.length <= 9 || mobileNumber.length >= 11) {
+        setmobileValidErr(true);
+        error = true;
+      } else if (isNaN(mobileNumber)) {
+        setmobileValidErr(true);
+        error = true;
+      } else {
+        setmobileValidErr(false);
+      }
+    }
+    if(company===''){
+      setCompanyNameErr(true)
+    }else{
+      setCompanyNameErr(false)
+    }
+
     if (Password === "") {
+      error=true
       setPasswordErr(true);
     } else {
       setPasswordErr(false);
     }
 
-    if (!nameErr && !emailErr && !PasswordErr) {
+    if (!error) {
       axios
-        .post("http://localhost:3001/admin/signup", { Name, Email, Password })
+        .post("http://localhost:3001/admin/signup", { Name, Email, Password ,mobileNumber,company})
         .then((res) => {
           console.log(res.data.user);
           localStorage.setItem("token", res.data.user);
@@ -80,7 +118,7 @@ function Signup() {
           if (res.data.user) {
             navigate("/admin/home");
           } else {
-            alert("This user already exist");
+            setExist("  This user already exist")
           }
         });
     }
@@ -121,6 +159,9 @@ function Signup() {
                 </div>
 
                 <form onSubmit={submitForm}>
+                <p align="center" className={` ${exist ? "danger" : "nodanger"}`} style={{ color: "red", paddingTop: 5 }}>
+                    <i className="fa fa-warning"></i> {exist}
+                  </p>
                   <div className="input_text">
                     <input
                       className={` ${nameErr ? "warning" : ""}`}
@@ -150,6 +191,37 @@ function Signup() {
                   </div>
                   <div className="input_text">
                     <input
+                      className={` ${companyNameErr ? "warning" : ""}`}
+                      type="text"
+                      placeholder="Enter Company"
+                      name="company"
+                      value={company}
+                      onChange={inputEvent}
+                    />
+                    <p className={`${companyNameErr ? "danger" : "nodanger"}`}>
+                      <i className="fa fa-warning"></i>Please enter your company name .
+                    </p>
+                  </div>
+                  <div className="input_text">
+                    <input
+                      className={` ${mobileErr ? "warning" : "nowarning"}`}
+                      type="text"
+                      placeholder="Enter your Mobile"
+                      name="mobile"
+                      value={mobileNumber}
+                      onChange={inputEvent}
+                    />
+                    <p className={` ${mobileValidErr ? "danger" : "nodanger"}`}>
+                      <i className="fa fa-warning"></i>Please enter your a valid
+                      mobile number
+                    </p>
+                    <p className={` ${mobileErr ? "danger" : "nodanger"}`}>
+                      <i className="fa fa-warning"></i>Please enter your mobile
+                      number.
+                    </p>
+                  </div>
+                  <div className="input_text">
+                    <input
                       className={` ${PasswordErr ? "warning" : ""}`}
                       type={pass}
                       placeholder="Enter Password"
@@ -166,9 +238,7 @@ function Signup() {
                       <i className="fa fa-warning"></i>Please enter password
                     </p>
                   </div>
-                  <div className="recovery">
-                    <p>Recovery Password</p>
-                  </div>
+                
                   <div className="btn">
                     <button type="submit">Sign in</button>
                   </div>

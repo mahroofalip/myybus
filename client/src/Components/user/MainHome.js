@@ -8,10 +8,10 @@ const MainHome = () => {
   return (
     <>
 
-      <Navbar />
-      <SearchBar />
-      <BusList />
-      <Container align={"center"}>
+       <Navbar />
+       <SearchBar />
+       {/* <BusList /> */}
+       <Container align={"center"}>
         <BottomNav />
       </Container>
 

@@ -81,14 +81,14 @@ function Login() {
         .then((res) => {
           setOpen(false);
           console.log(res.data.user);
-
+          
           let user = res.data.user;
           if (user === 0) {
             alert('Password wrong');
           } else if (!user) {
             alert("Invalid user");
           } else {
-            alert('hai')
+            localStorage.setItem("token", res.data.user);
              navigate("/admin/home");
           }
         });

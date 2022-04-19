@@ -12,10 +12,10 @@ function Login() {
 
   const [Email, setEmail] = useState("");
   const [Password, setPassword] = useState("");
-
+  const [exist, setExist] = useState("")
   const [emailErr, setEmailErr] = useState(false);
   const [PasswordErr, setPasswordErr] = useState(false);
-
+  const [warning, setWarning] = useState("")
   const [eye, seteye] = useState(true);
   const [pass, setpass] = useState("password");
   console.log(Email, Password);
@@ -47,35 +47,35 @@ function Login() {
   const submitForm = (e) => {
     e.preventDefault();
 
- 
-    let error =false
+
+    let error = false
 
     if (Email.length < 1) {
       setEmailErr(true);
-    error=true
+      error = true
 
     } else {
       setEmailErr(false);
     }
     if (Email === "") {
       setEmailErr(true);
-      error=true
+      error = true
     } else {
       setEmailErr(false);
     }
-  
-   
+
+
 
     if (Password === "") {
       setPasswordErr(true);
-      error=true
+      error = true
     } else {
       setPasswordErr(false);
     }
 
     if (!error) {
-    
-        setOpen(!open);
+
+      setOpen(!open);
       axios
 
         .post("http://localhost:3001/super/admin/Login", { Email, Password })
@@ -84,18 +84,18 @@ function Login() {
           console.log(res.data.superAdminToken);
 
           let user = res.data.superAdminToken;
-          alert(user)
+
           if (user === 0) {
-            alert('Password wrong');
+            setExist(" Password or email id is wrong")
           } else if (!user) {
-            alert("Invalid user");
+            setExist(" Invalid super admin !")
           } else {
-            alert('ok')
+
             localStorage.setItem("superAdminToken", user);
-             navigate("/super/admin/home");
+            navigate("/super/admin/home");
           }
         });
-    }else{
+    } else {
       alert('wrong')
     }
   };
@@ -135,6 +135,9 @@ function Login() {
                 </div>
 
                 <form onSubmit={submitForm}>
+                  <p align="center" className={` ${exist ? "danger" : "nodanger"}`} style={{ color: "red", paddingTop: 5 }}>
+                    <i className="fa fa-warning"></i> {exist}
+                  </p>
                   <div className="input_text">
                     <input
                       className={` ${emailErr ? "warning" : ""}`}

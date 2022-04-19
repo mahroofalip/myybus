@@ -1,0 +1,15 @@
+.logo {
+    width: 30px;
+}
+
+.mybus {
+    color: black;
+    margin-left: 5px;
+
+}
+
+.tab:hover {
+    color: rgb(210, 210, 185);
+    background-color: rgb(62, 62, 240);
+
+}
