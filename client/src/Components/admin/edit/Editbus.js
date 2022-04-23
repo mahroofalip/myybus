@@ -67,10 +67,10 @@ const Editbus = () => {
   const [seats, setSeates] = React.useState("");
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
-  const [duration, setDuration] = useState("");
-  const [depDate, setDepDate] = useState("");
+  const [prize, setPrize] = useState("");
+ 
   const [depTime, setDepTime] = useState("");
-  const [arrivDate, setArraivDate] = useState("");
+ 
   const [arrivTime, setArraivTime] = useState("");
   // image details
   // const [permit, setPermit] = useState("");  value={permit}
@@ -102,10 +102,10 @@ const Editbus = () => {
   const [seatsErr, setSeatesErr] = React.useState(false);
   const [fromErr, setFromErr] = React.useState(false);
   const [toErr, setToErr] = React.useState(false);
-  const [durationErr, setDurationErr] = useState(false);
-  const [depDateErr, setDepDateErr] = useState(false);
+  const [prizeErr, setPrizeErr] = useState(false);
+
   const [depTimeErr, setDepTimeErr] = useState(false);
-  const [arrivDateErr, setArraivDateErr] = useState(false);
+  
   const [arrivTimeErr, setArraivTimeErr] = useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [email, setEmail] = useState("")
@@ -153,25 +153,22 @@ const Editbus = () => {
         const bus=res.data.bus
          bus.departuredate = moment(bus.departuredate).format('L');
          bus.arraivaldate= moment(bus.arraivaldate).format('L');
-        console.log(bus);
+         console.log(bus);
         setBusname(bus.busname)
         setRegisterNUmber(bus.registernumber)
         setBusType(bus.bustype)
         setSeates(bus.seats)
         setFrom(bus.fromstart)
         setTo(bus.toend)
-        setDuration(bus.duration)
-        setDepDate(bus.departuredate)
+        setPrize(bus.prize)
         setDepTime(bus.departuretime)
-        setArraivDate(bus.arraivaldate)
         setArraivTime(bus.arraivaltime)
         setPermitPreviewSource(bus.permit)
         setimage1privew(bus.image1)
         setimage2privew(bus.image2)
         setimage3privew(bus.image3)
         setimage4privew(bus.image4)
-        
-       
+     
       });
   }, [])
 
@@ -187,18 +184,7 @@ const Editbus = () => {
     setAnchorElUser(null);
   };
 
-  // useEffect(() => {
-
-  //   let token = localStorage.getItem("token")
-  //   if(token){
-  //     var decoded = jwt_decode(token);
-  //     if (decoded.email) setEmail(decoded.email)
-  //   }else{
-  //     setEmail("")
-  //   }
-   
-   
-  // }, [email])
+ 
 
 
   const navigateTo = (e) => {
@@ -293,19 +279,15 @@ const Editbus = () => {
     if (name === "to") {
       setTo(value);
     }
-    if (name === "duration") {
-      setDuration(value);
+    if (name === "prize") {
+      setPrize(value);
     }
-    if (name === "depDate") {
-      setDepDate(value);
-    }
+    
     if (name === "depTime") {
       setDepTime(value);
     }
 
-    if (name === "arrivDate") {
-      setArraivDate(value);
-    }
+   
     if (name === "arrivTime") {
       setArraivTime(value);
     }
@@ -379,30 +361,20 @@ const Editbus = () => {
       setToErr(true);
       error = true;
     } else setToErr(false);
-    if (duration== "") {
-      setDurationErr(true);
+    if (prize== "") {
+      setPrizeErr(true);
       error = true;
     } else {
-      setDurationErr(false);
+      setPrizeErr(false);
     }
-    if (depDate.trim() === "") {
-      setDepDateErr(true);
-      error = true;
-    } else {
-      setDepDateErr(false);
-    }
+    
     if (depTime.trim() === "") {
       setDepTimeErr(true);
       error = true;
     } else {
       setDepTimeErr(false);
     }
-    if (arrivDate.trim() === "") {
-      setArraivDateErr(true);
-      error = true;
-    } else {
-      setArraivDateErr(false);
-    }
+    
     if (arrivTime.trim() === "") {
       setArraivTimeErr(true);
       error = true;
@@ -434,10 +406,8 @@ const Editbus = () => {
           seats,
           from,
           to,
-          duration,
-          depDate,
+          prize,
           depTime,
-          arrivDate,
           arrivTime,
           permit: previewPermitSource,
           image1: image1privew,
@@ -584,7 +554,365 @@ const Editbus = () => {
           </Grid>
         </Grid>
       </div>
-      <Typography
+
+      <Container>
+        <Typography sx={{ padding: 2, fontWeight: 900 }}>1:  ENTER THE BUS DETAILS</Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <p className={`${busnameErr ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+            <TextField
+              fullWidth
+              className={classes.root}
+              id="outlined-required"
+              label="ENTER BUS NAME"
+              name="busname"
+              value={busname}
+              onChange={inputEvent}
+            />
+
+
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+
+            <p className={`${registerNUmberErr ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
+            <TextField
+              fullWidth
+              className={classes.root}
+              name="registerNUmber"
+              value={registerNUmber}
+              id="outlined-required"
+              label="REGISTER NUMBER"
+              onChange={inputEvent}
+            />
+
+
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+              
+              className={`${busTypeErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+            <TextField
+              id="outlined-required"
+              select
+              label="BUS TYPE"
+              name="busType"
+              value={busType}
+              fullWidth
+              className={classes.root}
+              onChange={inputEvent}
+            >
+              {types.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+
+          <p
+             
+              className={`${prizeErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
+            <TextField
+              fullWidth
+              id="outlined-number"
+              label="PRIZE (Ticket)"
+              type="number"
+              name="prize"
+              value={prize}
+              className={classes.root}
+              onChange={inputEvent}
+            />
+           
+
+
+
+
+
+
+
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${fromErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
+            <TextField
+              fullWidth
+              id="outlined-required"
+              label="FROM"
+              name="from"
+              value={from}
+              className={classes.root}
+              onChange={inputEvent}
+            />
+          
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${toErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+            <TextField
+              fullWidth
+              id="outlined-required"
+              label="TO"
+              name="to"
+              value={to}
+              className={classes.root}
+              onChange={inputEvent}
+            />
+          
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${depTimeErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
+            <TextField
+              fullWidth
+              id="date"
+              label={`EDIT DEP TIME:(${depTime})`}
+              type="datetime-local"
+              name="depTime"
+              value={depTime}
+              defaultValue={depTime}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+         
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${arrivTimeErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
+            <TextField
+              fullWidth
+              id="date"
+              label={`EDIT ARR TIME :(${arrivTime})`}
+              type="datetime-local"
+              name="arrivTime"
+              value={arrivTime}
+              
+              defaultValue={arrivTime}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+           
+          </Grid>
+
+
+
+        </Grid>
+      </Container>
+
+
+
+
+
+      <Container>
+
+        <Grid sx={{ marginTop: 0 }} container spacing={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              {image1privew && (
+                <img
+                  src={image1privew}
+                  alt="chosen"
+                  style={{ width: "80px", marginBottom: "4px" }}
+                />
+              )}
+            </div>
+          
+            <TextField
+              fullWidth
+              id="file"
+              label="IMAGE 1"
+              type="file"
+              name="image1"
+              value={image1}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+          
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              {image2privew && (
+                <img
+                  src={image2privew}
+                  alt="chosen"
+                  style={{ width: "80px", marginBottom: "4px" }}
+                />
+              )}
+            </div>
+           
+            <TextField
+              fullWidth
+              id="file"
+              label="IMAGE 2"
+              type="file"
+              name="image2"
+              value={image2}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+          
+          </Grid>{" "}
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              {image3privew && (
+                <img
+                  src={image3privew}
+                  alt="chosen"
+                  style={{ width: "80px", marginBottom: "4px" }}
+                />
+              )}
+            </div>
+           
+            <TextField
+              fullWidth
+              id="file"
+              label="IMAGE 3"
+              type="file"
+              name="image3"
+              value={image3}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+           
+          </Grid>{" "}
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <div style={{ display: "flex", justifyContent: "end" }}>
+              {image4privew && (
+                <img
+                  src={image4privew}
+                  alt="chosen"
+                  style={{ width: "80px", marginBottom: "4px" }}
+                />
+              )}
+            </div>
+           
+            <TextField
+              fullWidth
+              id="file"
+              label="IMAGE 4"
+              type="file"
+              name="image4"
+              value={image4}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+          
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${seatsErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+            <TextField
+              fullWidth
+              id="outlined-number"
+              label="SEATS"
+              name="seats"
+              value={seats}
+              type="number"
+              className={classes.root}
+              onChange={inputEvent}
+            />
+          
+
+
+            <Typography sx={{ padding: 2, fontWeight: 900 }}>2: ADD PERMIT</Typography>
+          
+            <TextField
+              fullWidth
+              id="file"
+              label="PERMIT"
+              type="file"
+              name="permit"
+             
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+          
+
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            {previewPermitSource && (
+              <div>
+                <img
+                  src={previewPermitSource}
+                  alt="permit"
+                  style={{ width: "120px", border: "solid 3px orange" }}
+                />
+              </div>
+            )}
+
+          </Grid>
+
+
+
+        </Grid>
+      </Container>
+
+
+      {/* <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"
       >
@@ -976,7 +1304,7 @@ const Editbus = () => {
             
           </Grid>
         </Grid>
-      </Container>
+      </Container> */}
 
       <Container>
         <Box
@@ -993,7 +1321,7 @@ const Editbus = () => {
               endIcon={<AddIcon />}
               onClick={submitForm}
             >
-              <strong>ADD BUS</strong>
+              <strong>EDIT BUS</strong>
             </Button>
 
             <Button variant="outlined" endIcon={<CancelIcon />}>

@@ -16,6 +16,8 @@ import Test from "../src/Components/Test"
 import { ConfirmProvider } from "material-ui-confirm";
 import ManageCompanies from "./Components/super-admin/manage_companies/Companies";
 import Displaybus from "./Components/super-admin/viewbuses/Displaybuses";
+import Viewbusesuser from "./Components/user/viewbus/Viewbuseuser";
+import Notfound from "./Components/user/viewbus/Notfound"
 function App() {
 
   return (
@@ -36,8 +38,11 @@ function App() {
         <Route path="/super/admin/home" element={<SuperAdminHome/>}/>
         <Route path="/super/admin/managecompanies" element={<ManageCompanies/>}/>
         <Route path="/admin/editbus/:busId" element={<Editbus/>}/>
+        <Route path="/user/search/notfoud" element={<Notfound/>}/>
         {/* <Route path="/test" element={<Test/>}/> */}
         <Route path="/super/admin/viewbuses/:ownerId" element={<Displaybus/>}/>
+        <Route path="/user/bus/search/:dataToSearch" element={<Viewbusesuser/>}/>
+        
       </Routes>
       </ConfirmProvider>
       </BrowserRouter>

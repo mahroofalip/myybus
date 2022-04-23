@@ -7,6 +7,11 @@ const db = require("./db/connection");
 require("dotenv").config();
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
+const moment = require('moment')
+        
+ var momentDurationFormatSetup = require("moment-duration-format");
+ momentDurationFormatSetup(moment);  
+
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
 app.use(cors());
@@ -107,7 +112,15 @@ app.post("/admin/Login", async (req, res) => {
 
 //admin add bus
 app.post("/admin/addbus", async (req, res) => {
+
+  req.body.depTime = new Date(req.body.depTime)
+  req.body.arrivTime = new Date(req.body.arrivTime)
   console.log(req.body);
+
+
+
+
+
   const permit = {
     image: req.body.permit,
   };
@@ -142,55 +155,55 @@ app.post("/admin/addbus", async (req, res) => {
   });
 
   const newbus = await db.get(
-    "INSERT INTO busdetails(owner_id,busname,registernumber,bustype,seats,fromstart,toend,duration,departuredate,departuretime,arraivaldate,arraivaltime,permit,image1,image2,image3,image4) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *",
-    [req.body.owner_id,
-    req.body.busname,
-    req.body.registerNUmber,
-    req.body.busType,
-    req.body.seats,
-    req.body.from,
-    req.body.to,
-    req.body.duration,
-    req.body.depDate,
-    req.body.depTime,
-    req.body.arrivDate,
-    req.body.arrivTime,
-    permit_link.secure_url,
-    image1_link.secure_url,
-    image2_link.secure_url,
-    image3_link.secure_url,
-    image4_link.secure_url,
+    "INSERT INTO busdetails(owner_id,busname,registernumber,bustype,seats,fromstart,toend,prize,departuretime,arraivaltime,permit,image1,image2,image3,image4) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *",
+    [
+      req.body.owner_id,
+      req.body.busname,
+      req.body.registerNUmber,
+      req.body.busType,
+      req.body.seats,
+      req.body.from,
+      req.body.to,
+      req.body.prize,
+      req.body.depTime,
+      req.body.arrivTime,
+      permit_link.secure_url,
+      image1_link.secure_url,
+      image2_link.secure_url,
+      image3_link.secure_url,
+      image4_link.secure_url
     ]
   );
   console.log(newbus.rows[0], "this is the new bus");
   res.json({ status: true })
-});
-              
 
-app.post("/admin/getbuses", async (req, res) => { 
-  console.log("get bus fn called",req.body); 
+
+});
+
+
+app.post("/admin/getbuses", async (req, res) => {
+  console.log("get bus fn called", req.body);
   let result = await db.get("select * from busdetails WHERE owner_id = $1", [req.body.ownerId])
 
   console.log(result.rows);
   if (result.rows) {
-   
+
     res.json({ result: result.rows })
   } else {
     console.log('no buses in db');
   }
 
-
-
-
-
 })
+
 // admin edit bus
 app.post('/admin/editbus', async (req, res) => {
 
   let bus = await db.get(
     `select * from busdetails where "id" ='${req.body.busId}'`
   );
-
+  console.log(bus.rows[0]);
+  bus.rows[0].departuretime = moment(bus.rows[0].departuretime).format('lll')
+  bus.rows[0].arraivaltime = moment(bus.rows[0].arraivaltime).format('lll')
   if (bus.rows[0]) {
     return res.json({ bus: bus.rows[0] })
   } else {
@@ -211,21 +224,22 @@ app.put('/admin/editsubmit', async (req, res) => {
   console.log(req.body.image3.length);
   console.log(req.body.image4.length);
 
+  req.body.depTime = new Date(req.body.depTime)
+  req.body.arrivTime = new Date(req.body.arrivTime)
 
   // if not image for update
   if (req.body.permit.length < 100 && req.body.image1.length < 100 && req.body.image2.length < 100 && req.body.image3.length < 100 && req.body.image4.length < 100) {
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+    const newbus = await db.get(`UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *`,
+    
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
       req.body.depTime,
-      req.body.arrivDate,
       req.body.arrivTime,
       req.body.id])
 
@@ -242,34 +256,34 @@ app.put('/admin/editsubmit', async (req, res) => {
       folder: "mybus",
     });
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,permit=$12  WHERE id = $13 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9,permit=$10  WHERE id = $11 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,  //permit,image1,image2,image3,image4
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       permit_link.secure_url,
       req.body.id])
 
   } else {
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       req.body.id])
 
@@ -286,34 +300,34 @@ app.put('/admin/editsubmit', async (req, res) => {
       folder: "mybus",
     });
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image1=$12  WHERE id = $13 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9,image1=$10  WHERE id = $11 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       link.secure_url,
       req.body.id])
 
   } else {
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       req.body.id])
 
@@ -330,34 +344,34 @@ app.put('/admin/editsubmit', async (req, res) => {
       folder: "mybus",
     });
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image2=$12  WHERE id = $13 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 ,image2=$10  WHERE id = $11 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,  //permit,image1,image2,image3,image4
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       link.secure_url,
       req.body.id])
 
   } else {
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       req.body.id])
 
@@ -373,34 +387,34 @@ app.put('/admin/editsubmit', async (req, res) => {
       folder: "mybus",
     });
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image3=$12  WHERE id = $13 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 ,image3=$10  WHERE id = $11 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,  //permit,image1,image2,image3,image4
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       link.secure_url,
       req.body.id])
 
   } else {
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       req.body.id])
 
@@ -417,34 +431,34 @@ app.put('/admin/editsubmit', async (req, res) => {
       folder: "mybus",
     });
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11,image4=$12  WHERE id = $13 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9,image4=$10  WHERE id = $11 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       link.secure_url,
       req.body.id])
 
   } else {
 
-    const newbus = await db.get('UPDATE busdetails SET busname = $1, registernumber = $2, bustype = $3 ,seats=$4, fromstart=$5, toend=$6, duration=$7, departuredate=$8 ,departuretime=$9, arraivaldate=$10 ,arraivaltime=$11 WHERE id = $12 RETURNING *',
+    const newbus = await db.get('UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *',
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
       req.body.seats,
       req.body.from,
       req.body.to,
-      req.body.duration,
-      req.body.depDate,
+      req.body.prize,
+
       req.body.depTime,
-      req.body.arrivDate,
+
       req.body.arrivTime,
       req.body.id])
 
@@ -760,32 +774,80 @@ app.post('/user/google/authentication', (req, res) => {
 
 
 
-app.post('/user/bus/search',async(req,res)=>{
-let { date,to,from}=req.body
+app.post('/user/bus/search', async (req, res) => {
 
-   console.log(date,to,from);
+  console.log('search fn called');
 
-   let allbuses = await db.get("select * from busdetails")
-   let result=allbuses.rows
-   let filtered= await result.map((bus)=>{
-  
-    if(bus.fromstart===from && bus.toend===to && bus.departuredate===date){
-      return bus  
+  console.log(req.body);
+
+  let { date, to, from } = req.body
+
+  console.log(date, to, from);
+  date = new Date(date)
+  date = moment(date).format('L')
+
+
+  let allbuses = await db.get("select * from busdetails")
+
+  let result = allbuses.rows
+  console.log(result, '*******************');
+
+  for (x of result) {
+    x.days = x.arraivaltime - x.departuretime
+
+
+    x.departuretime = moment(x.departuretime).format('L')
+
+  }
+
+
+
+  let filtered = await result.map((bus) => {
+
+    if (bus.fromstart.toLowerCase() === from.toLowerCase() && bus.toend.toLowerCase() === to.toLowerCase() && bus.departuretime === date) {
+      return bus
     }
 
-   })
+  })
+
+
+
+  let buses = []
+
+  for (i = 0; i < filtered.length; i++) {
+    let count = 0
+    if (!filtered[i] == "") {
+      buses.push(filtered[i])
+      count++
+    } else {
+      console.log('filtered undifind')
+    }
+  }
+
+
+
+  for (x of buses) {
+    x.departuretime = moment(x.departuretime).format('lll')
+    x.arraivaltime = moment(x.arraivaltime).format('lll')
     
-      
+     x.days = Math.floor(x.days / 60000);
+     x.days=moment.duration(x.days, "minutes").format("d [days],h [hrs], m [min]");
+  }
+ 
+  console.log(buses, ' this is result ==============');
+        
+       
 
-   
-    
 
-
-
+  if (buses[0]) {
+    res.json({ result: buses, status: true })
+  } else {
+    res.json({ status: false })
+  }
 
 })
 
-      
+
 
 
 
@@ -858,53 +920,44 @@ app.post('/super/admin/Login', async (req, res) => {
 
 app.get('/super/admin/getcompanies', async (req, res) => {
 
-     
-
-
-
-   let result =await db.get('select * from owners')
-   console.log(result.rows);
+  let result = await db.get('select * from owners')
+  console.log(result.rows);
   let owner = []
 
-  owner = await result.rows.map((row)=>{
+  owner = await result.rows.map((row) => {
 
-    let obj={ id:row.owner_id,
+    let obj = {
+      id: row.owner_id,
       blocked: row.blocked,
-      company:row.company,
+      company: row.company,
       mobile: row.mobile,
-      owner_email:row.owner_email,
-      owner_name:row.owner_name,
-      owner_password:row.owner_password
-      }
-     return obj
-   
-  
-   })
+      owner_email: row.owner_email,
+      owner_name: row.owner_name,
+      owner_password: row.owner_password
+    }
+    return obj
 
 
+  })
 
-
-
-
-  
 
 
 
   // let result = await db.get(`SELECT * 
   // FROM "owners" 
   // JOIN "busdetails" ON "owners"."owner_id" = "busdetails"."owner_id"`)
-   
-  res.json({result:owner})
+
+  res.json({ result: owner })
 
 })
 
 
 
 
-app.post('/super/admin/viewbuses',async(req,res)=>{
-  console.log('[[[[[[[[[[[[[[4444]]]]]]]]]]]]]]]]]',req.body);
-  let result =await db.get('select * from busdetails  WHERE owner_id = $1', [req.body.ownerId])
-  res.json({buses:result.rows})
+app.post('/super/admin/viewbuses', async (req, res) => {
+  console.log('[[[[[[[[[[[[[[4444]]]]]]]]]]]]]]]]]', req.body);
+  let result = await db.get('select * from busdetails  WHERE owner_id = $1', [req.body.ownerId])
+  res.json({ buses: result.rows })
 
 })
 

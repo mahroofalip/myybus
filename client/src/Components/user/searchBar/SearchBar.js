@@ -4,6 +4,7 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
+import { useNavigate } from "react-router-dom";
 import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -24,6 +25,7 @@ import "./search.css";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import { Puff, Oval } from 'react-loading-icons'
+import Viewbusesuser from "../viewbus/Viewbuseuser";
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   backgroundColor: "#012169",
   "@media all": {
@@ -57,6 +59,11 @@ const searchButton = {
 }
 
 function SearchBar() {
+
+
+
+  const navigate = useNavigate();
+
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
   const [date, setDate] = React.useState("");
@@ -66,6 +73,8 @@ function SearchBar() {
   const [fromErr, setFromErr] = React.useState(false)
   const [toErr, setToErr] = React.useState(false)
   const [dateErr, setDateErr] = React.useState(false)
+  
+  const [click,setClick]=  React.useState(false)
 
   const handleClose = () => {
     setOpen(false);
@@ -120,11 +129,11 @@ function SearchBar() {
     }
 
     if (!error) {
-      setOpen(!open);
-      axios
-        .post("http://localhost:3001/user/bus/search", {
-          from, to, date
-        })
+
+      setClick(true)
+
+     
+    
     } else {
       console.log('form full requerd')
     }
@@ -133,7 +142,9 @@ function SearchBar() {
 
 
 
-  return (
+  return click ? (
+   <Viewbusesuser from={from} to={to} date={date} />
+    ):(
     <StyledToolbar style={outerWrapper}>
       <Box
         style={{

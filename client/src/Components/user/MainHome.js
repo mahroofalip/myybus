@@ -10,9 +10,9 @@ const MainHome = () => {
 
        <Navbar />
        <SearchBar />
-       {/* <BusList /> */}
+      
        <Container align={"center"}>
-        <BottomNav />
+        
       </Container>
 
 

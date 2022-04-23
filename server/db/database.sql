@@ -1,5 +1,5 @@
 
-sudo -u postgres psq
+sudo -u postgres psql
 
 CREATE DATABASE mybus;
 
@@ -41,21 +41,26 @@ CREATE TABLE owners(
    owner_id INT NOT NULL,
    busname TEXT NOT NULL,
    registernumber TEXT NOT NULL,
-   busType VARCHAR(10) NOT NULL,
+   bustype VARCHAR(10) NOT NULL,
    seats INT NOT NULL,
    fromStart TEXT NOT NULL,
-   toEnd TEXT NOT NULL,
-   duration INT NOT NULL,
-   departureDate DATE NOT NULL,
-   departureTime TIME NOT NULL,
-   arraivalDate DATE NOT NULL,
-   arraivalTime TIME NOT NULL,
+   toEnd TEXT NOT NULL ,
+   prize INT NOT NULL,
+   departuretime DATE NOT NULL,
+   arraivaltime DATE NOT NULL,
    permit TEXT NOT NULL,
    image1 TEXT NOT NULL,
    image2 TEXT NOT NULL,
    image3 TEXT NOT NULL,
    image4 TEXT NOT NULL
   );
-        
-       
-        
+
+  -- // let diff= date2-date
+  -- // console.log(date, date2 ,   "      :", diff );
+
+  -- // var minutes = Math.floor(diff / 60000);
+  
+  -- // console.log(minutes);
+
+  -- // let samp = moment.duration(minutes, "minutes").format("d [days],h [hrs], m [min]");
+  -- // console.log(samp, '++++++++++++++++++++++++++++++++++++++')

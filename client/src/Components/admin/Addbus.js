@@ -52,68 +52,65 @@ const currencies = [
 ];
 
 const AddBus = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const classes = useStyles();
- // bus details
-const [busname, setBusname] = React.useState("");
+  // bus details
+  const [busname, setBusname] = React.useState("");
   const [registerNUmber, setRegisterNUmber] = React.useState("");
   const [busType, setBusType] = React.useState("");
   const [seats, setSeates] = React.useState("");
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
-  const [duration, setDuration] = useState("");
-  const [depDate, setDepDate] = useState("");
+  const [prize, setPrize] = useState("");
+ 
   const [depTime, setDepTime] = useState("");
-  const [arrivDate, setArraivDate] = useState("");
+
   const [arrivTime, setArraivTime] = useState("");
   // image details
   const [permit, setPermit] = useState("");
-const [image1, setImage1] = useState("");
+  const [image1, setImage1] = useState("");
   const [image2, setImage2] = useState("");
   const [image3, setImage3] = useState("");
   const [image4, setImage4] = useState("");
-//permit
- const [previewPermitSource, setPermitPreviewSource] = useState(""); 
- //image1
-const [image1privew, setimage1privew] = useState("");
+  //permit
+  const [previewPermitSource, setPermitPreviewSource] = useState("");
+  //image1
+  const [image1privew, setimage1privew] = useState("");
   // image 2
- const [image2privew, setimage2privew] = useState("");
+  const [image2privew, setimage2privew] = useState("");
   // image3
   const [image3privew, setimage3privew] = useState("");
   // image 4
   const [image4privew, setimage4privew] = useState("");
- //errors
+  //errors
+
+  const [depTimeErr,setDepTimeErr]=useState(false)
   const [busnameErr, setBusnameErr] = React.useState(false);
   const [registerNUmberErr, setRegisterNUmberErr] = React.useState(false);
   const [busTypeErr, setBusTypeErr] = React.useState(false);
   const [seatsErr, setSeatesErr] = React.useState(false);
   const [fromErr, setFromErr] = React.useState(false);
   const [toErr, setToErr] = React.useState(false);
-  const [durationErr, setDurationErr] = useState(false);
-  const [depDateErr, setDepDateErr] = useState(false);
-  const [depTimeErr, setDepTimeErr] = useState(false);
-  const [arrivDateErr, setArraivDateErr] = useState(false);
-  const [arrivTimeErr, setArraivTimeErr] = useState(false);
+  const [prizeErr, setPrizeErr] = useState(false);
+  const [arrivTimeErr,setArrivTimeErr]=useState(false)
   const [permitErr, setPermitErr] = useState(false);
   const [image1Err, setImage1Err] = useState(false);
   const [image2Err, setImage2Err] = useState(false);
   const [image3Err, setImage3Err] = useState(false);
   const [image4Err, setImage4Err] = useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [owner_id,setOwnerid]=useState("");
+  const [owner_id, setOwnerid] = useState("");
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("")
-  const clearForm=()=>{
+  const clearForm = () => {
     setBusname("")
     setRegisterNUmber("")
     setBusType("")
     setSeates("")
     setFrom("")
     setTo("")
-    setDuration("")
-    setDepDate("")
+    setPrize("")
     setDepTime("")
-    setArraivDate("")
     setArraivTime("")
     setImage1("")
     setImage2("")
@@ -126,8 +123,8 @@ const [image1privew, setimage1privew] = useState("");
     setimage3privew("")
     setimage4privew("")
   }
-  
- 
+
+
 
   const handleClose = () => {
     setOpen(false);
@@ -135,27 +132,6 @@ const [image1privew, setimage1privew] = useState("");
   const handleToggle = () => {
     setOpen(!open);
   };
-
-
-
-  // console.log(busname, ":     busname");
-  // console.log(registerNUmber, ":     registerNUmber");
-  // console.log(busType, ":     busType");
-  // console.log(seats, ":     seats");
-  // console.log(from, ":     from");
-  // console.log(to, ":     to");
-  // console.log(duration, ":     duration");
-  // console.log(depDate, ":     depDate");
-  // console.log(depTime, ":     deptime  ");
-  // console.log(arrivDate, ":     arrivDate");
-  // console.log(arrivTime, ":     arrivTime");
-  // console.log(permit, ":              permit image");
-  // console.log(image1, ":       image1");
-  // console.log(image2, ":       image1");
-  // console.log(image3, ":       image1");
-  // console.log(image4, ":       image1");
-
-
 
 
 
@@ -168,52 +144,42 @@ const [image1privew, setimage1privew] = useState("");
   };
 
 
-  // useEffect(() => {
 
-  //   let token = localStorage.getItem("token")
-  //   if(token){
-  //     var decoded = jwt_decode(token);
-  //     if (decoded)  
-  //   }
-   
-   
-  // }, [owner_id])
-  
 
 
   useEffect(() => {
 
     let token = localStorage.getItem("token")
-    if(token){
+    if (token) {
       var decoded = jwt_decode(token);
       if (decoded) {
         setEmail(decoded.email)
         setOwnerid(decoded.id)
       }
-    }else{
+    } else {
       setEmail("")
       return navigate("/admin/login")
-     
+
     }
-   
-   
-  }, [email,owner_id])
+
+
+  }, [email, owner_id])
 
 
   const navigateTo = (e) => {
     if (e.target.innerText === "Account") {
       navigate("/admin/login")
     }
-    
+
     if (e.target.innerText === "Logout") {
-     
-      localStorage.setItem("token","");
+
+      localStorage.setItem("token", "");
       setEmail(false)
       navigate("/admin/login")
-  
+
     }
   };
-  
+
   const populateHome = () => {
     navigate("/admin/home");
   };
@@ -288,19 +254,14 @@ const [image1privew, setimage1privew] = useState("");
     if (name === "to") {
       setTo(value);
     }
-    if (name === "duration") {
-      setDuration(value);
+    if (name === "prize") {
+      setPrize(value);
     }
-    if (name === "depDate") {
-      setDepDate(value);
-    }
+   
     if (name === "depTime") {
       setDepTime(value);
     }
-
-    if (name === "arrivDate") {
-      setArraivDate(value);
-    }
+ 
     if (name === "arrivTime") {
       setArraivTime(value);
     }
@@ -337,6 +298,7 @@ const [image1privew, setimage1privew] = useState("");
   const submitForm = (e) => {
     e.preventDefault();
     let error = false;
+    
     if (busname.trim() === "") {
       setBusnameErr(true);
       error = true;
@@ -365,36 +327,13 @@ const [image1privew, setimage1privew] = useState("");
       setToErr(true);
       error = true;
     } else setToErr(false);
-    if (duration.trim() === "") {
-      setDurationErr(true);
+    if (prize.trim() === "") {
+      setPrizeErr(true);
       error = true;
     } else {
-      setDurationErr(false);
+      setPrizeErr(false);
     }
-    if (depDate.trim() === "") {
-      setDepDateErr(true);
-      error = true;
-    } else {
-      setDepDateErr(false);
-    }
-    if (depTime.trim() === "") {
-      setDepTimeErr(true);
-      error = true;
-    } else {
-      setDepTimeErr(false);
-    }
-    if (arrivDate.trim() === "") {
-      setArraivDateErr(true);
-      error = true;
-    } else {
-      setArraivDateErr(false);
-    }
-    if (arrivTime.trim() === "") {
-      setArraivTimeErr(true);
-      error = true;
-    } else {
-      setArraivTimeErr(false);
-    }
+    
     if (busType.trim() === "") {
       setBusTypeErr(true);
       error = true;
@@ -432,12 +371,24 @@ const [image1privew, setimage1privew] = useState("");
       setImage4Err(false);
     }
 
+   if(arrivTime===""){
+    setArrivTimeErr(true)
+   }else{
+     setArrivTimeErr(false)
+   }
+  if(depTime===""){
+    setDepTimeErr(true)
+  }else{
+    setDepTimeErr(false)
+  }
+
+
     if (error) {
 
       console.log("not submit field required");
     } else {
-    
-     
+
+
 
       setOpen(!open);
 
@@ -450,10 +401,8 @@ const [image1privew, setimage1privew] = useState("");
           seats,
           from,
           to,
-          duration,
-          depDate,
+          prize,
           depTime,
-          arrivDate,
           arrivTime,
           permit: previewPermitSource,
           image1: image1privew,
@@ -498,7 +447,7 @@ const [image1privew, setimage1privew] = useState("");
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-            <span style={{ marginRight: 20,color:"#012169" }}>{email ? email : ""}</span>
+              <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />
@@ -601,7 +550,7 @@ const [image1privew, setimage1privew] = useState("");
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"
       >
-        ENTER THE BUS DETAILS
+        ADD BUS
       </Typography>
       <Container>
         {" "}
@@ -609,8 +558,13 @@ const [image1privew, setimage1privew] = useState("");
       </Container>
 
       <Container>
-        <Grid sx={{ marginTop: 1 }} container spacing={3}>
-          <Grid item xs={12} sm={6} md={4} lg={4}>
+        <Typography sx={{ padding: 2, fontWeight: 900 }}>1:  ENTER THE BUS DETAILS</Typography>
+
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            <p className={`${busnameErr ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
             <TextField
               fullWidth
               className={classes.root}
@@ -621,12 +575,15 @@ const [image1privew, setimage1privew] = useState("");
               onChange={inputEvent}
             />
 
-            <p className={`${busnameErr ? "dangerText" : "notDanger"}`}>
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+
           </Grid>
 
-          <Grid item xs={12} sm={6} md={4} lg={4}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+
+            <p className={`${registerNUmberErr ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
             <TextField
               fullWidth
               className={classes.root}
@@ -637,12 +594,16 @@ const [image1privew, setimage1privew] = useState("");
               onChange={inputEvent}
             />
 
-            <p className={`${registerNUmberErr ? "dangerText" : "notDanger"}`}>
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+
           </Grid>
 
-          <Grid item xs={6} sm={4} md={2} lg={2}>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+              
+              className={`${busTypeErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
             <TextField
               id="outlined-required"
               select
@@ -659,32 +620,45 @@ const [image1privew, setimage1privew] = useState("");
                 </MenuItem>
               ))}
             </TextField>
-            <p
-              align="center"
-              className={`${busTypeErr ? "dangerText" : "notDanger"}`}
+          
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+
+          <p
+             
+              className={`${prizeErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
             </p>
-          </Grid>
-          <Grid item xs={6} sm={4} md={2} lg={2}>
+
             <TextField
+              fullWidth
               id="outlined-number"
-              label="SEATS"
-              name="seats"
-              value={seats}
+              label="PRIZE (Ticket)"
               type="number"
+              name="prize"
+              value={prize}
               className={classes.root}
               onChange={inputEvent}
             />
-            <p
-              align="center"
-              className={`${seatsErr ? "dangerText" : "notDanger"}`}
-            >
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+           
+
+
+
+
+
+
+
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${fromErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
             <TextField
               fullWidth
               id="outlined-required"
@@ -694,14 +668,15 @@ const [image1privew, setimage1privew] = useState("");
               className={classes.root}
               onChange={inputEvent}
             />
-            <p
-              align="center"
-              className={`${fromErr ? "dangerText" : "notDanger"}`}
+          
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${toErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
             </p>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
             <TextField
               fullWidth
               id="outlined-required"
@@ -711,115 +686,48 @@ const [image1privew, setimage1privew] = useState("");
               className={classes.root}
               onChange={inputEvent}
             />
-            <p
-              align="center"
-              className={`${toErr ? "dangerText" : "notDanger"}`}
-            >
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
-          </Grid>
-          <Grid item xs={12} sm={4} md={2} lg={2}>
-            <TextField
-              fullWidth
-              id="outlined-number"
-              label="DURATION (KM)"
-              type="number"
-              name="duration"
-              value={duration}
-              className={classes.root}
-              onChange={inputEvent}
-            />
-            <p
-              align="center"
-              className={`${durationErr ? "dangerText" : "notDanger"}`}
-            >
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+          
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3}>
-            <TextField
-              fullWidth
-              id="file"
-              label="PERMIT"
-              type="file"
-              name="permit"
-              value={permit}
-              className={classes.root}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={inputEvent}
-            />
-            <p className={`${permitErr ? "dangerText" : "notDanger"}`}>
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
-          </Grid>
-          <Grid item xs={12} sm={6} md={1} lg={1}>
-            {previewPermitSource && (
-              <div>
-                <img
-                  src={previewPermitSource}
-                  alt="permit"
-                  style={{ width: "75px", height: "55px" }}
-                />
-              </div>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <TextField
-              fullWidth
-              id="date"
-              label="DEPARTURE DATE"
-              type="date"
-              defaultValue="2017-05-24"
-              name="depDate"
-              value={depDate}
-              className={classes.root}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={inputEvent}
-            />
-            <p
-              align="center"
-              className={`${depDateErr ? "dangerText" : "notDanger"}`}
-            >
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <TextField
-              fullWidth
-              id="time"
-              label="DEPARTURE TIME"
-              type="time"
-              name="depTime"
-              value={depTime}
-              defaultValue="12-00-00"
-              className={classes.root}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={inputEvent}
-            />
-            <p
-              align="center"
+          <p
+             
               className={`${depTimeErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
             </p>
-          </Grid>
 
-          <Grid item xs={12} sm={6} md={3} lg={3}>
             <TextField
               fullWidth
               id="date"
-              label="ARRIVAL DATE"
-              type="date"
-              name="arrivDate"
-              value={arrivDate}
+              label="DEPARTURE TIME"
+              type="datetime-local"
+              defaultValue="2017-05-24"
+              name="depTime"
+              value={depTime}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+         
+          </Grid>
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${arrivTimeErr ? "dangerText" : "notDanger"}`}
+            >
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+
+            <TextField
+              fullWidth
+              id="date"
+              label="ARRIVAL TIME"
+              type="datetime-local"
+              name="arrivTime"
+              value={arrivTime}
               defaultValue="2017-05-24"
               className={classes.root}
               InputLabelProps={{
@@ -827,41 +735,19 @@ const [image1privew, setimage1privew] = useState("");
               }}
               onChange={inputEvent}
             />
-            <p
-              align="center"
-              className={`${arrivDateErr ? "dangerText" : "notDanger"}`}
-            >
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+           
           </Grid>
 
-          <Grid item xs={12} sm={6} md={3} lg={3}>
-            <TextField
-              fullWidth
-              id="time"
-              label="ARRIVAL TIME"
-              type="time"
-              name="arrivTime"
-              value={arrivTime}
-              defaultValue="12-00-00"
-              className={classes.root}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              onChange={inputEvent}
-            />
-            <p
-              align="center"
-              className={`${arrivTimeErr ? "dangerText" : "notDanger"}`}
-            >
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
-          </Grid>
+
+
         </Grid>
       </Container>
 
+
+
+
+
       <Container>
-        <Typography sx={{ padding: 2, fontWeight: 900 }}>ADD IMAGES</Typography>
 
         <Grid sx={{ marginTop: 0 }} container spacing={3}>
           <Grid item xs={12} sm={6} md={3} lg={3}>
@@ -874,6 +760,9 @@ const [image1privew, setimage1privew] = useState("");
                 />
               )}
             </div>
+            <p className={`${image1Err ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
             <TextField
               fullWidth
               id="file"
@@ -887,9 +776,7 @@ const [image1privew, setimage1privew] = useState("");
               }}
               onChange={inputEvent}
             />
-            <p className={`${image1Err ? "dangerText" : "notDanger"}`}>
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+          
           </Grid>
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -901,6 +788,9 @@ const [image1privew, setimage1privew] = useState("");
                 />
               )}
             </div>
+            <p className={`${image2Err ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
             <TextField
               fullWidth
               id="file"
@@ -914,9 +804,7 @@ const [image1privew, setimage1privew] = useState("");
               }}
               onChange={inputEvent}
             />
-            <p className={`${image2Err ? "dangerText" : "notDanger"}`}>
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+          
           </Grid>{" "}
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -928,6 +816,9 @@ const [image1privew, setimage1privew] = useState("");
                 />
               )}
             </div>
+            <p className={`${image3Err ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
             <TextField
               fullWidth
               id="file"
@@ -941,9 +832,7 @@ const [image1privew, setimage1privew] = useState("");
               }}
               onChange={inputEvent}
             />
-            <p className={`${image3Err ? "dangerText" : "notDanger"}`}>
-              <i className="fa fa-warning"></i>This field is required.
-            </p>
+           
           </Grid>{" "}
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -955,6 +844,9 @@ const [image1privew, setimage1privew] = useState("");
                 />
               )}
             </div>
+            <p className={`${image4Err ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
             <TextField
               fullWidth
               id="file"
@@ -968,10 +860,65 @@ const [image1privew, setimage1privew] = useState("");
               }}
               onChange={inputEvent}
             />
-            <p className={`${image4Err ? "dangerText" : "notDanger"}`}>
+          
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+          <p
+             
+              className={`${seatsErr ? "dangerText" : "notDanger"}`}
+            >
               <i className="fa fa-warning"></i>This field is required.
             </p>
+            <TextField
+              fullWidth
+              id="outlined-number"
+              label="SEATS"
+              name="seats"
+              value={seats}
+              type="number"
+              className={classes.root}
+              onChange={inputEvent}
+            />
+          
+
+
+            <Typography sx={{ padding: 2, fontWeight: 900 }}>2: ADD PERMIT</Typography>
+            <p className={`${permitErr ? "dangerText" : "notDanger"}`}>
+              <i className="fa fa-warning"></i>This field is required.
+            </p>
+            <TextField
+              fullWidth
+              id="file"
+              label="PERMIT"
+              type="file"
+              name="permit"
+              value={permit}
+              className={classes.root}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              onChange={inputEvent}
+            />
+          
+
           </Grid>
+
+          <Grid item xs={12} sm={6} md={3} lg={3}>
+            {previewPermitSource && (
+              <div>
+                <img
+                  src={previewPermitSource}
+                  alt="permit"
+                  style={{ width: "120px", border: "solid 3px orange" }}
+                />
+              </div>
+            )}
+
+          </Grid>
+
+
+
         </Grid>
       </Container>
 
@@ -1007,7 +954,7 @@ const [image1privew, setimage1privew] = useState("");
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-       
+
     </>
   );
 
