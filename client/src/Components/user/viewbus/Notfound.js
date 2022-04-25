@@ -57,7 +57,7 @@ const black = {
   color: "black",
 };
 const outerWrapper = {
-  paddingBottom: 0,
+  paddingBottom: 10,
   paddingTop: 0,
   paddingLeft: 10,
   paddingRight: 10,
@@ -83,8 +83,7 @@ function Notfound(props){
     const [from, setFrom] = React.useState("");
     const [to, setTo] = React.useState("");
     const [date, setDate] = React.useState("");
-  
-  
+   
     const [open, setOpen] = React.useState(false);
     const [fromErr, setFromErr] = React.useState(false)
     const [toErr, setToErr] = React.useState(false)
@@ -147,7 +146,7 @@ function Notfound(props){
       if (!error) {
   
         setClick(true)
-  
+       
        
       
       } else {
@@ -155,7 +154,7 @@ function Notfound(props){
       }
     };
   
-  
+  console.log(from ,to , date);
 
 
 

@@ -22,6 +22,9 @@ import TextField from "@mui/material/TextField";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@mui/material/Button";
 import "./adminForm.css";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import axios from "axios";
 import { color, height } from "@mui/system";
 import Backdrop from '@mui/material/Backdrop';
@@ -62,10 +65,10 @@ const AddBus = () => {
   const [from, setFrom] = React.useState("");
   const [to, setTo] = React.useState("");
   const [prize, setPrize] = useState("");
- 
-  const [depTime, setDepTime] = useState("");
 
-  const [arrivTime, setArraivTime] = useState("");
+  const [depTime, setDepTime] = useState(new Date());
+
+  const [arrivTime, setArraivTime] =  useState(new Date());
   // image details
   const [permit, setPermit] = useState("");
   const [image1, setImage1] = useState("");
@@ -84,7 +87,7 @@ const AddBus = () => {
   const [image4privew, setimage4privew] = useState("");
   //errors
 
-  const [depTimeErr,setDepTimeErr]=useState(false)
+  const [depTimeErr, setDepTimeErr] = useState(false)
   const [busnameErr, setBusnameErr] = React.useState(false);
   const [registerNUmberErr, setRegisterNUmberErr] = React.useState(false);
   const [busTypeErr, setBusTypeErr] = React.useState(false);
@@ -92,7 +95,7 @@ const AddBus = () => {
   const [fromErr, setFromErr] = React.useState(false);
   const [toErr, setToErr] = React.useState(false);
   const [prizeErr, setPrizeErr] = useState(false);
-  const [arrivTimeErr,setArrivTimeErr]=useState(false)
+  const [arrivTimeErr, setArrivTimeErr] = useState(false)
   const [permitErr, setPermitErr] = useState(false);
   const [image1Err, setImage1Err] = useState(false);
   const [image2Err, setImage2Err] = useState(false);
@@ -257,14 +260,14 @@ const AddBus = () => {
     if (name === "prize") {
       setPrize(value);
     }
-   
-    if (name === "depTime") {
-      setDepTime(value);
-    }
- 
-    if (name === "arrivTime") {
-      setArraivTime(value);
-    }
+
+    // if (name === "depTime") {
+    //   setDepTime(value);
+    // }
+
+    // if (name === "arrivTime") {
+    //   setArraivTime(value);
+    // }
 
     if (name === "permit") {
       const file = event.target.files[0];
@@ -298,7 +301,7 @@ const AddBus = () => {
   const submitForm = (e) => {
     e.preventDefault();
     let error = false;
-    
+
     if (busname.trim() === "") {
       setBusnameErr(true);
       error = true;
@@ -333,7 +336,7 @@ const AddBus = () => {
     } else {
       setPrizeErr(false);
     }
-    
+
     if (busType.trim() === "") {
       setBusTypeErr(true);
       error = true;
@@ -371,16 +374,16 @@ const AddBus = () => {
       setImage4Err(false);
     }
 
-   if(arrivTime===""){
-    setArrivTimeErr(true)
-   }else{
-     setArrivTimeErr(false)
-   }
-  if(depTime===""){
-    setDepTimeErr(true)
-  }else{
-    setDepTimeErr(false)
-  }
+    if (arrivTime === "") {
+      setArrivTimeErr(true)
+    } else {
+      setArrivTimeErr(false)
+    }
+    if (depTime === "") {
+      setDepTimeErr(true)
+    } else {
+      setDepTimeErr(false)
+    }
 
 
     if (error) {
@@ -598,8 +601,8 @@ const AddBus = () => {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3}>
-          <p
-              
+            <p
+
               className={`${busTypeErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
@@ -620,12 +623,12 @@ const AddBus = () => {
                 </MenuItem>
               ))}
             </TextField>
-          
+
           </Grid>
           <Grid item xs={12} sm={6} md={3} lg={3}>
 
-          <p
-             
+            <p
+
               className={`${prizeErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
@@ -641,7 +644,7 @@ const AddBus = () => {
               className={classes.root}
               onChange={inputEvent}
             />
-           
+
 
 
 
@@ -652,8 +655,8 @@ const AddBus = () => {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3}>
-          <p
-             
+            <p
+
               className={`${fromErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
@@ -668,11 +671,11 @@ const AddBus = () => {
               className={classes.root}
               onChange={inputEvent}
             />
-          
+
           </Grid>
           <Grid item xs={12} sm={6} md={3} lg={3}>
-          <p
-             
+            <p
+
               className={`${toErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
@@ -686,22 +689,22 @@ const AddBus = () => {
               className={classes.root}
               onChange={inputEvent}
             />
-          
+
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3}>
-          <p
-             
+            <p
+
               className={`${depTimeErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
             </p>
 
-            <TextField
+            {/* <TextField
               fullWidth
-              id="date"
+              id="datetime"
               label="DEPARTURE TIME"
-              type="datetime-local"
+              type="datetime"
               defaultValue="2017-05-24"
               name="depTime"
               value={depTime}
@@ -711,31 +714,57 @@ const AddBus = () => {
               }}
               onChange={inputEvent}
             />
-         
+          */}
+
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                renderInput={(props) => <TextField  fullWidth size='medium' className={classes.root} {...props} />}
+                label="DEPARTURE TIME"
+                 value={depTime}
+                  onChange={(newValue) => {
+                  setDepTime(newValue);
+                }}
+              />
+
+            </LocalizationProvider>
+
           </Grid>
           <Grid item xs={12} sm={6} md={3} lg={3}>
-          <p
-             
+            <p
+
               className={`${arrivTimeErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
             </p>
 
-            <TextField
+            {/* <TextField
               fullWidth
-              id="date"
+              id="datetime"
               label="ARRIVAL TIME"
-              type="datetime-local"
+              type="datetime"
               name="arrivTime"
               value={arrivTime}
-              defaultValue="2017-05-24"
+
               className={classes.root}
               InputLabelProps={{
                 shrink: true,
               }}
               onChange={inputEvent}
-            />
-           
+            /> */}
+
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DateTimePicker
+                renderInput={(props) => <TextField  fullWidth size='medium' className={classes.root} {...props} />}
+                label="ARRIVAL TIME"
+
+                value={arrivTime}
+                onChange={(newValue) => {
+                  setArraivTime(newValue);
+                }}
+              />
+
+            </LocalizationProvider>
+
           </Grid>
 
 
@@ -776,7 +805,7 @@ const AddBus = () => {
               }}
               onChange={inputEvent}
             />
-          
+
           </Grid>
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -804,7 +833,7 @@ const AddBus = () => {
               }}
               onChange={inputEvent}
             />
-          
+
           </Grid>{" "}
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -832,7 +861,7 @@ const AddBus = () => {
               }}
               onChange={inputEvent}
             />
-           
+
           </Grid>{" "}
           <Grid item xs={12} sm={6} md={3} lg={3}>
             <div style={{ display: "flex", justifyContent: "end" }}>
@@ -860,12 +889,12 @@ const AddBus = () => {
               }}
               onChange={inputEvent}
             />
-          
+
           </Grid>
 
           <Grid item xs={12} sm={6} md={3} lg={3}>
-          <p
-             
+            <p
+
               className={`${seatsErr ? "dangerText" : "notDanger"}`}
             >
               <i className="fa fa-warning"></i>This field is required.
@@ -880,7 +909,7 @@ const AddBus = () => {
               className={classes.root}
               onChange={inputEvent}
             />
-          
+
 
 
             <Typography sx={{ padding: 2, fontWeight: 900 }}>2: ADD PERMIT</Typography>
@@ -900,7 +929,7 @@ const AddBus = () => {
               }}
               onChange={inputEvent}
             />
-          
+
 
           </Grid>
 

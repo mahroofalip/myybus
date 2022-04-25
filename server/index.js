@@ -1,3 +1,4 @@
+
 const express = require("express");
 const app = express();
 var morgan = require("morgan");
@@ -8,9 +9,9 @@ require("dotenv").config();
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const moment = require('moment')
-        
- var momentDurationFormatSetup = require("moment-duration-format");
- momentDurationFormatSetup(moment);  
+
+var momentDurationFormatSetup = require("moment-duration-format");
+momentDurationFormatSetup(moment);
 
 app.use(express.json({ limit: "25mb" }));
 app.use(express.urlencoded({ limit: "25mb", extended: true }));
@@ -22,6 +23,7 @@ const { response } = require("express");
 const { json } = require("body-parser");
 const cloudinary = require("cloudinary").v2;
 const { OAuth2Client } = require("google-auth-library")
+
 const clientgoogle = new OAuth2Client("308398325326-d8vr61d3g6v4drv1r91hj5j13locln01.apps.googleusercontent.com")
 
 const ACCOUNT_SID = process.env.ACCOUNT_SID;
@@ -113,13 +115,9 @@ app.post("/admin/Login", async (req, res) => {
 //admin add bus
 app.post("/admin/addbus", async (req, res) => {
 
-  req.body.depTime = new Date(req.body.depTime)
-  req.body.arrivTime = new Date(req.body.arrivTime)
-  console.log(req.body);
+  req.body.depTime = moment(req.body.depTime).format();
 
-
-
-
+  req.body.arrivTime = moment(req.body.arrivTime).format();
 
   const permit = {
     image: req.body.permit,
@@ -182,10 +180,9 @@ app.post("/admin/addbus", async (req, res) => {
 
 
 app.post("/admin/getbuses", async (req, res) => {
-  console.log("get bus fn called", req.body);
+
   let result = await db.get("select * from busdetails WHERE owner_id = $1", [req.body.ownerId])
 
-  console.log(result.rows);
   if (result.rows) {
 
     res.json({ result: result.rows })
@@ -202,8 +199,7 @@ app.post('/admin/editbus', async (req, res) => {
     `select * from busdetails where "id" ='${req.body.busId}'`
   );
   console.log(bus.rows[0]);
-  bus.rows[0].departuretime = moment(bus.rows[0].departuretime).format('lll')
-  bus.rows[0].arraivaltime = moment(bus.rows[0].arraivaltime).format('lll')
+
   if (bus.rows[0]) {
     return res.json({ bus: bus.rows[0] })
   } else {
@@ -224,14 +220,19 @@ app.put('/admin/editsubmit', async (req, res) => {
   console.log(req.body.image3.length);
   console.log(req.body.image4.length);
 
-  req.body.depTime = new Date(req.body.depTime)
-  req.body.arrivTime = new Date(req.body.arrivTime)
+  req.body.depTime = moment(req.body.depTime).format();
+
+  req.body.arrivTime = moment(req.body.arrivTime).format();
+
+
+
+
 
   // if not image for update
   if (req.body.permit.length < 100 && req.body.image1.length < 100 && req.body.image2.length < 100 && req.body.image3.length < 100 && req.body.image4.length < 100) {
 
     const newbus = await db.get(`UPDATE busdetails SET busname = $1,registernumber = $2, bustype = $3 ,seats=$4,fromstart=$5, toend=$6, prize=$7,  departuretime=$8,  arraivaltime=$9 WHERE id = $10 RETURNING *`,
-    
+
       [req.body.busname,
       req.body.registerNUmber,
       req.body.busType,
@@ -776,13 +777,9 @@ app.post('/user/google/authentication', (req, res) => {
 
 app.post('/user/bus/search', async (req, res) => {
 
-  console.log('search fn called');
-
-  console.log(req.body);
-
   let { date, to, from } = req.body
 
-  console.log(date, to, from);
+
   date = new Date(date)
   date = moment(date).format('L')
 
@@ -794,7 +791,7 @@ app.post('/user/bus/search', async (req, res) => {
 
   for (x of result) {
     x.days = x.arraivaltime - x.departuretime
-
+    x.dTime = moment(x.departuretime).format('lll')
 
     x.departuretime = moment(x.departuretime).format('L')
 
@@ -827,16 +824,84 @@ app.post('/user/bus/search', async (req, res) => {
 
 
   for (x of buses) {
+
     x.departuretime = moment(x.departuretime).format('lll')
     x.arraivaltime = moment(x.arraivaltime).format('lll')
-    
-     x.days = Math.floor(x.days / 60000);
-     x.days=moment.duration(x.days, "minutes").format("d [days],h [hrs], m [min]");
+
+    x.time = x.dTime.slice(13, 21)
+    x.time = moment(x.time, 'hh:mm A').format('HH:mm')
+    x.days = Math.floor(x.days / 60000);
+    x.time = x.time.slice(0, 2)
+    x.time= parseInt(x.time)
+    x.fiveAmToTenAm=false
+    x.tenAmToFivePm=false
+    x.fivePmToElevenPm=false
+    x.afterElevenToFiveAm=false
+    if(x.time >=5 && x.time <=10){
+      x.fiveAmToTenAm=true
+    }else{
+      x.fiveAmToTenAm=false
+    }
+    if(x.time >=10 && x.time <=17){
+      x.tenAmToFivePm=true
+    }else{
+      x.tenAmToFivePm=false
+    }
+    if(x.time >=17 && x.time <=23){
+      x.fivePmToElevenPm=true
+    }else{
+      x.fivePmToElevenPm=false
+    }
+    if(x.time >=23 || x.time <=5){
+      x.afterElevenToFiveAm=true
+    } else{
+      x.afterElevenToFiveAm=false
+    }
+    x.days = moment.duration(x.days, "minutes").format("d [days],h [hrs], m [min]");
   }
- 
+
+  //
+
+  // let diff=a-b
+
+  // var ts1 = new Date(a).getTime()/1000;
+  // console.log('iiiiiiiiiiiiiiiiiiiiii')
+  // console.log(ts1)
+
+  // var ts2 = new Date(b).getTime()/1000;
+  // console.log('iiiiiiiiiiiiiiiiiiiiii')
+  // console.log(ts2)
+  // let days= ts2-ts1
+  // console.log('iiiiiiiiiiiiiiiiiiiiii')
+  // console.log(days);
+  //    days=days/60
+  // let hello=moment.duration(days, "minutes").format("d [days],h [hrs], m [min]");
+  // console.log('iiiiiiiiiiiiiiiiiiiiii')
+  // console.log(hello);
+  //   req.body.depTime = moment(a).format('lll')
+  //   req.body.arrivTime = moment(req.body.arrivTime).format('lll')
+
+
+
+  // req.body.depTime = new Date(req.body.depTime)
+  // req.body.arrivTime = new Date(req.body.arrivTime)
+
+  // console.log(req.body.depTime,":    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ---->      :",  req.body.arrivTime);
+
+
+
+  //
+
+
+
+
+
+
+
   console.log(buses, ' this is result ==============');
-        
-       
+
+
+
 
 
   if (buses[0]) {
@@ -955,7 +1020,7 @@ app.get('/super/admin/getcompanies', async (req, res) => {
 
 
 app.post('/super/admin/viewbuses', async (req, res) => {
-  console.log('[[[[[[[[[[[[[[4444]]]]]]]]]]]]]]]]]', req.body);
+
   let result = await db.get('select * from busdetails  WHERE owner_id = $1', [req.body.ownerId])
   res.json({ buses: result.rows })
 
