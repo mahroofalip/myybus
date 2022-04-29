@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.seat {
+    float: left;
+    display: block;
+    margin: 2px;
+    background: rgb(50, 50, 230);
+    width: 25px;
+    height: 25px;
+}
+
+.seatchange {
+    float: left;
+    display: block;
+    margin: 2px;
+    background: #F44336;
+    width: 20px;
+    height: 20px;
+}
+
+
+.seat-select {
+    display: none;
+}
+
+.seat-select:checked+.seat {
+    background: #F44336;
+} 

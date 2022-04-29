@@ -42,23 +42,8 @@ const SuperAdminHome = () => {
     <>
     
       <Navbar />
-      <div>
-      <Grid sx={{backgroundColor:'#012169', marginTop: 0}} container spacing={3}>
-        <Grid sx={{backgroundColor:'gray',border:"solid white"}} item xs={12} sm={2} md={3}>
-         <strong style={{color:'white',margin:40}}>DASHBOARD</strong> 
-        </Grid>
-         <Grid></Grid>
-        <Grid onClick={handleManageCompanies} className="tab" sx={{ color:'#fff',backgroundColor:'#012169',border:"solid white",cursor:"pointer"}}  item xs={12} sm={3} md={3}>
-        <strong className="tab" style={{margin:40,}} >MANAGE OWNERS</strong>
-        </Grid>
-        <Grid onClick={handleManageUsers} className="tab" sx={{color:'#fff',backgroundColor:'#012169',border:"solid white",cursor:"pointer"}}  item xs={12} sm={3} md={3}>
-        <strong  style={{margin:40,}}>MANAGE USERS</strong>
-        </Grid>
-        <Grid className="tab" sx={{color:'#fff',backgroundColor:'#012169',border:"solid white",cursor:"pointer"}}  item xs={12} sm={3} md={3}>
-        <strong className="tab" style={{margin:40,}}>REPORTS</strong>
-        </Grid>
-      </Grid>
-      </div>
+      <Tabs tab1hover="nohover" tab2hover="tab" tab3hover="tab" tab4hover="tab" tab1="gray" tab2="#012169" tab3="#012169" tab4="#012169" />
+    
     </>
   );
 };

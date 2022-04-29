@@ -146,7 +146,7 @@ const Editbus = () => {
 
     axios
       .post("http://localhost:3001/admin/editbus", {
-        busId
+        owner_id, busId
       })
       .then((res) => {
         setOpen(false);
@@ -285,14 +285,7 @@ const Editbus = () => {
       setPrize(value);
     }
 
-    // if (name === "depTime") {
-    //   setDepTime(value);
-    // }
-
-
-    // if (name === "arrivTime") {
-    //   setArraivTime(value);
-    // }
+   
 
     if (name === "permit") {
       const file = event.target.files[0];
@@ -404,6 +397,7 @@ const Editbus = () => {
 
       axios
         .put("http://localhost:3001/admin/editsubmit", {
+          owner_id,
           busname,
           registerNUmber,
           busType,

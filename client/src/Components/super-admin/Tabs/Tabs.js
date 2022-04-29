@@ -1,5 +1,5 @@
 
-import React ,{useState,useEffect}from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -18,7 +18,7 @@ import Menu from "@mui/material/Menu";
 import jwt_decode from "jwt-decode";
 const settings = ["Profile", "Account", "Logout"];
 
-const Tabs = () => {
+const Tabs = (props) => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("")
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -27,14 +27,14 @@ const Tabs = () => {
   useEffect(() => {
 
     let token = localStorage.getItem("superAdminToken")
-    if(token){
+    if (token) {
       var decoded = jwt_decode(token);
       if (decoded.email) setEmail(decoded.email)
-    }else{
+    } else {
       setEmail("")
     }
-   
-   
+
+
   }, [email])
 
 
@@ -51,44 +51,46 @@ const Tabs = () => {
     if (e.target.innerText === "Account") {
       navigate("/super/admin/login");
     }
-    
+
     if (e.target.innerText === "Logout") {
-     
-      localStorage.setItem("superAdminToken","");
+
+      localStorage.setItem("superAdminToken", "");
       setEmail(false)
-  
+
     }
   };
 
-const handleManageOwners=()=>{
-  navigate('/super/admin/managecompanies')
-}
-const handleManageUsers=()=>{
-  navigate('/admin/viewbus')
-}
+  const handleManageOwners = () => {
+    navigate('/super/admin/managecompanies')
+  }
+  const handleManageUsers = () => {
+    navigate('/super/admin/ManageUsers')
+  }
+  const handleDashbord =()=>{
+    navigate('/super/admin/home')
+  }
 
 
-
-
+ 
   return (
     <>
-     
-    <div>
-      <Grid sx={{backgroundColor:'#012169', marginTop: 0}} container spacing={3}>
-        <Grid sx={{backgroundColor:'gray',border:"solid white"}} item xs={12} sm={2} md={3}>
-         <strong style={{color:'white',margin:40}}>DASHBOARD</strong> 
+
+      <div>
+        <Grid sx={{ backgroundColor: '#012169', marginTop: 0 }} container spacing={3}>
+          <Grid  onClick={handleDashbord} className={props.tab1hover} sx={{ backgroundColor: props.tab1, border: "solid white" }} item xs={12} sm={2} md={3}>
+            <strong style={{ color: 'white', margin: 40 }}>DASHBOARD</strong>
+          </Grid>
+
+          <Grid onClick={handleManageOwners} className="tab" sx={{ color: '#fff', backgroundColor: props.tab2, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
+            <strong className={props.tab2hover} style={{ margin: 40, }} >MANAGE OWNERS</strong>
+          </Grid>
+          <Grid onClick={handleManageUsers} className={props.tab3hover} sx={{ color: '#fff', backgroundColor: props.tab3, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
+            <strong style={{ margin: 40, }}>MANAGE USERS</strong>
+          </Grid>
+          <Grid  className={props.tab4hover} sx={{ color: '#fff', backgroundColor: props.tab4, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
+            <strong style={{ margin: 40, }}>REPORTS</strong>
+          </Grid>
         </Grid>
-         <Grid></Grid>
-        <Grid onClick={handleManageOwners} className="tab" sx={{ color:'#fff',backgroundColor:'#012169',border:"solid white",cursor:"pointer"}}  item xs={12} sm={3} md={3}>
-        <strong className="tab" style={{margin:40,}} >MANAGE OWNERS</strong>
-        </Grid>
-        <Grid onClick={handleManageUsers} className="tab" sx={{color:'#fff',backgroundColor:'#012169',border:"solid white",cursor:"pointer"}}  item xs={12} sm={3} md={3}>
-        <strong  style={{margin:40,}}>MANAGE USERS</strong>
-        </Grid>
-        <Grid className="tab" sx={{color:'#fff',backgroundColor:'#012169',border:"solid white",cursor:"pointer"}}  item xs={12} sm={3} md={3}>
-        <strong className="tab" style={{margin:40,}}>REPORTS</strong>
-        </Grid>
-      </Grid>
       </div>
     </>
   );

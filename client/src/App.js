@@ -18,6 +18,8 @@ import ManageCompanies from "./Components/super-admin/manage_companies/Companies
 import Displaybus from "./Components/super-admin/viewbuses/Displaybuses";
 import Viewbusesuser from "./Components/user/viewbus/Viewbuseuser";
 import Notfound from "./Components/user/viewbus/Notfound"
+import Seats from "./Components/user/viewbus/buslayout/Seats"
+import ManageUsers from "./Components/super-admin/manageUsers/Manageusers";
 function App() {
 
   return (
@@ -42,6 +44,8 @@ function App() {
           <Route path="/test" element={<Test />} />
           <Route path="/super/admin/viewbuses/:ownerId" element={<Displaybus />} />
           <Route path="/user/bus/search/:dataToSearch" element={<Viewbusesuser />} />
+          <Route path="/seatslayout/:selectedBusId" element={<Seats/>}/>
+          <Route path="/super/admin/ManageUsers" element={<ManageUsers/>}/>
 
         </Routes>
       </ConfirmProvider>

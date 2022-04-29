@@ -67,7 +67,7 @@ function Navbar() {
 
 
   return (
-    <AppBar sx={{ backgroundColor: "#012169" }} position="static">
+    <AppBar sx={{ backgroundColor: "#012169",paddingBottom:"15px" }} position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}>

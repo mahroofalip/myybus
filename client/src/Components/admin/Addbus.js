@@ -68,7 +68,7 @@ const AddBus = () => {
 
   const [depTime, setDepTime] = useState(new Date());
 
-  const [arrivTime, setArraivTime] =  useState(new Date());
+  const [arrivTime, setArraivTime] = useState(new Date());
   // image details
   const [permit, setPermit] = useState("");
   const [image1, setImage1] = useState("");
@@ -101,6 +101,7 @@ const AddBus = () => {
   const [image2Err, setImage2Err] = useState(false);
   const [image3Err, setImage3Err] = useState(false);
   const [image4Err, setImage4Err] = useState(false);
+  const [blockErr, setBlockErr] = useState(false)
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [owner_id, setOwnerid] = useState("");
   const [open, setOpen] = useState(false);
@@ -261,13 +262,6 @@ const AddBus = () => {
       setPrize(value);
     }
 
-    // if (name === "depTime") {
-    //   setDepTime(value);
-    // }
-
-    // if (name === "arrivTime") {
-    //   setArraivTime(value);
-    // }
 
     if (name === "permit") {
       const file = event.target.files[0];
@@ -415,7 +409,11 @@ const AddBus = () => {
         })
         .then((res) => {
           setOpen(false);
-          if (res.data.status) {
+          if (res.data.block) {
+
+            setBlockErr("Warning : You can't Access our service your account is blocked")
+
+          } else {
             navigate('/admin/viewbus/' + owner_id)
           }
 
@@ -425,129 +423,135 @@ const AddBus = () => {
 
   return (
     <>
+      <div style={{ position: "sticky", top: 0 }}>
+        <AppBar sx={{ backgroundColor: "#fff" }} position="static">
+          <Container maxWidth="xl">
+            <Toolbar disableGutters>
 
-      <AppBar sx={{ backgroundColor: "#fff" }} position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: {
-                  xs: "flex",
-                  md: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                },
-              }}
-            >
-              <DirectionsBusIcon style={{ color: "gray", fontSize: 40 }} />
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  display: {
+                    xs: "flex",
+                    md: "flex",
+                    alignItems: "center",
+                   
 
-              <span className="mybus">
-                <strong style={{ color: "gray", fontWeight: 900 }}>
-                  ADMIN PANEL
-                </strong>
-              </span>
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
+                  },
                 }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={navigateTo}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-      <div>
-        <Grid
-          sx={{ backgroundColor: "#012169", marginTop: 0 }}
-          container
-          spacing={2}
-        >
+                <DirectionsBusIcon style={{ color: "gray", fontSize: 40 }} />
+
+                <span className="mybus">
+                  <strong style={{ color: "gray", fontWeight: 900 }}>
+                    ADMIN PANEL
+                  </strong>
+                </span>
+                {blockErr ? <span style={{ color: "red", marginLeft: "150px" }}><i className="fa fa-warning"></i> {blockErr}</span> : ""}
+
+
+              </Box>
+
+              <Box sx={{ flexGrow: 0 }}>
+                <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar alt="Remy Sharp" src="" />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting) => (
+                    <MenuItem key={setting} onClick={navigateTo}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </MenuItem>
+                  ))}
+                </Menu>
+              </Box>
+            </Toolbar>
+          </Container>
+        </AppBar>
+        <div>
           <Grid
-            onClick={populateHome}
-            className="tab"
-            sx={{
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
+            sx={{ backgroundColor: "#012169", marginTop: 0 }}
+            container
+            spacing={2}
           >
-            <strong style={{ color: "white", margin: 40 }}>DASHBOARD</strong>
+            <Grid
+              onClick={populateHome}
+              className="tab"
+              sx={{
+                backgroundColor: "#012169",
+                border: "solid white",
+                cursor: "pointer",
+              }}
+              item
+              xs={12}
+              sm={2}
+              md={2}
+            >
+              <strong style={{ color: "white", margin: 40 }}>DASHBOARD</strong>
+            </Grid>
+            <Grid></Grid>
+            <Grid
+              sx={{
+                color: "#fff",
+                backgroundColor: "gray",
+                border: "solid white",
+              }}
+              item
+              xs={12}
+              sm={2}
+              md={2}
+            >
+              <strong style={{ margin: 40 }}>ADD BUS</strong>
+            </Grid>
+            <Grid onClick={handlViewBus}
+              className="tab"
+              sx={{
+                color: "#fff",
+                backgroundColor: "#012169",
+                border: "solid white",
+                cursor: "pointer",
+              }}
+              item
+              xs={12}
+              sm={2}
+              md={2}
+            >
+              <strong style={{ margin: 40 }}>VIEW BUS</strong>
+            </Grid>
+            <Grid
+              className="tab"
+              sx={{
+                color: "#fff",
+                backgroundColor: "#012169",
+                border: "solid white",
+                cursor: "pointer",
+              }}
+              item
+              xs={12}
+              sm={2}
+              md={2}
+            >
+              <strong style={{ margin: 40 }}>REPORTS</strong>
+            </Grid>
           </Grid>
-          <Grid></Grid>
-          <Grid
-            sx={{
-              color: "#fff",
-              backgroundColor: "gray",
-              border: "solid white",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>ADD BUS</strong>
-          </Grid>
-          <Grid onClick={handlViewBus}
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>VIEW BUS</strong>
-          </Grid>
-          <Grid
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>REPORTS</strong>
-          </Grid>
-        </Grid>
+        </div>
       </div>
       <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
@@ -718,10 +722,10 @@ const AddBus = () => {
 
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
-                renderInput={(props) => <TextField  fullWidth size='medium' className={classes.root} {...props} />}
+                renderInput={(props) => <TextField fullWidth size='medium' className={classes.root} {...props} />}
                 label="DEPARTURE TIME"
-                 value={depTime}
-                  onChange={(newValue) => {
+                value={depTime}
+                onChange={(newValue) => {
                   setDepTime(newValue);
                 }}
               />
@@ -754,7 +758,7 @@ const AddBus = () => {
 
             <LocalizationProvider dateAdapter={AdapterDateFns}>
               <DateTimePicker
-                renderInput={(props) => <TextField  fullWidth size='medium' className={classes.root} {...props} />}
+                renderInput={(props) => <TextField fullWidth size='medium' className={classes.root} {...props} />}
                 label="ARRIVAL TIME"
 
                 value={arrivTime}

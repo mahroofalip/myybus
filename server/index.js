@@ -43,8 +43,20 @@ app.listen(3001, () => {
 });
 
 
+let verifyBlock = async (req, res, next) => {
 
-
+  let user = await db.get(
+    `select * from owners where "owner_id" ='${req.body.owner_id}'`
+  );
+  console.log(user.rows,"2222222222222222222222222222222222222222222");
+  if (user.rows[0].blocked) {
+    console.log('USER IS BLOCKED');
+    res.json({  block: true })
+  } else {
+    console.log("ADMIN NOT BLOCKED");
+    next()
+  }
+}
 
 
 
@@ -85,35 +97,51 @@ app.post("/admin/Login", async (req, res) => {
     `select * from owners where "owner_email" ='${req.body.Email}'`
   );
 
+
+
+
   if (user.rows[0]) {
-    const validPassword = await bcrypt.compare(
-      req.body.Password,
-      user.rows[0].owner_password
-    );
 
-    if (!validPassword) {
-      return res.json({ user: 0 });
+    if (user.rows[0].blocked) {
+      console.log('USER IS BLOCKED');
+      res.json({ status: true, block: true,user:true })
     } else {
-      const { owner_name, owner_email, owner_id } = user.rows[0];
 
-      var token = jwt.sign(
-        {
-          id: owner_id,
-          name: owner_name,
-          email: owner_email,
-        },
-        "secret123"
+      const validPassword = await bcrypt.compare(
+        req.body.Password,
+        user.rows[0].owner_password
       );
 
-      return res.json({ user: token });
+      if (!validPassword) {
+        return res.json({ user: 0 });
+      } else {
+        const { owner_name, owner_email, owner_id } = user.rows[0];
+
+        var token = jwt.sign(
+          {
+            id: owner_id,
+            name: owner_name,
+            email: owner_email,
+          },
+          "secret123"
+        );
+
+        return res.json({ block: false, user: token });
+      }
+
+
+
+
     }
+
   } else {
     return res.json({ user: false });
   }
 });
 
 //admin add bus
-app.post("/admin/addbus", async (req, res) => {
+
+app.post("/admin/addbus", verifyBlock, async (req, res) => {
 
   req.body.depTime = moment(req.body.depTime).format();
 
@@ -173,19 +201,19 @@ app.post("/admin/addbus", async (req, res) => {
     ]
   );
   console.log(newbus.rows[0], "this is the new bus");
-  res.json({ status: true })
+  res.json({ status: true, block: false })
 
 
 });
 
 
-app.post("/admin/getbuses", async (req, res) => {
+app.post("/admin/getbuses", verifyBlock, async (req, res) => {
 
   let result = await db.get("select * from busdetails WHERE owner_id = $1", [req.body.ownerId])
 
   if (result.rows) {
 
-    res.json({ result: result.rows })
+    res.json({ block:false, result: result.rows })
   } else {
     console.log('no buses in db');
   }
@@ -244,7 +272,7 @@ app.put('/admin/editsubmit', async (req, res) => {
       req.body.arrivTime,
       req.body.id])
 
-    return res.json({ status: true })
+    return res.json({ status: true, block: false })
   }
   // if permit image for update
   if (req.body.permit.length > 100) {
@@ -479,7 +507,7 @@ app.delete('/admin/deletebus/:id', (req, res) => {
 
   db.get('DELETE FROM busdetails WHERE id = $1', [req.params.id])
 
-  res.json({ status: true })
+  res.json({ status: true, block: false })
 
 })
 
@@ -491,7 +519,7 @@ app.delete('/admin/deletebus/:id', (req, res) => {
 
 
 app.post("/user/otp/request", async (req, res) => {
-  console.log('//////////');
+
   let exitst = await db.get('SELECT * FROM users WHERE email = $1', [req.body.Email])
 
   if (exitst.rows[0]) {
@@ -566,10 +594,6 @@ app.post("/user/otp/verify", (req, res) => {
     });
 });
 
-
-
-
-
 // user login
 
 app.post('/user/Login', async (req, res) => {
@@ -600,9 +624,6 @@ app.post('/user/Login', async (req, res) => {
         "secret123"
       );
       return res.json({ status: true, userToken: token });
-
-
-
 
 
     } else {
@@ -687,11 +708,6 @@ app.post('/user/otp/login/verify', (req, res) => {
 
 
 
-
-
-
-
-
 })
 
 
@@ -772,7 +788,29 @@ app.post('/user/google/authentication', (req, res) => {
 })
 
 
+app.post('/user/bus/getOne', async (req, res) => {
 
+  console.log("ppppppppppppppp", req.body)
+  let bus = await db.get(
+    `select * from busdetails where "id" ='${req.body.id}'`
+  );
+  console.log(bus.rows[0]);
+
+  if (bus.rows[0]) {
+    for (x of bus.rows) {
+
+
+      x.departuretime = moment(x.departuretime).format('lll')
+      x.arraivaltime = moment(x.arraivaltime).format('lll')
+
+    }
+    return res.json({ bus: bus.rows[0] })
+  } else {
+    console.log('no bus for this id');
+  }
+
+
+})
 
 
 app.post('/user/bus/search', async (req, res) => {
@@ -832,77 +870,39 @@ app.post('/user/bus/search', async (req, res) => {
     x.time = moment(x.time, 'hh:mm A').format('HH:mm')
     x.days = Math.floor(x.days / 60000);
     x.time = x.time.slice(0, 2)
-    x.time= parseInt(x.time)
-    x.fiveAmToTenAm=false
-    x.tenAmToFivePm=false
-    x.fivePmToElevenPm=false
-    x.afterElevenToFiveAm=false
-    if(x.time >=5 && x.time <=10){
-      x.fiveAmToTenAm=true
-    }else{
-      x.fiveAmToTenAm=false
+    x.time = parseInt(x.time)
+    x.fiveAmToTenAm = false
+    x.tenAmToFivePm = false
+    x.fivePmToElevenPm = false
+    x.afterElevenToFiveAm = false
+    if (x.time >= 5 && x.time <= 10) {
+      x.fiveAmToTenAm = true
+    } else {
+      x.fiveAmToTenAm = false
     }
-    if(x.time >=10 && x.time <=17){
-      x.tenAmToFivePm=true
-    }else{
-      x.tenAmToFivePm=false
+    if (x.time >= 10 && x.time <= 17) {
+      x.tenAmToFivePm = true
+    } else {
+      x.tenAmToFivePm = false
     }
-    if(x.time >=17 && x.time <=23){
-      x.fivePmToElevenPm=true
-    }else{
-      x.fivePmToElevenPm=false
+    if (x.time >= 17 && x.time <= 23) {
+      x.fivePmToElevenPm = true
+    } else {
+      x.fivePmToElevenPm = false
     }
-    if(x.time >=23 || x.time <=5){
-      x.afterElevenToFiveAm=true
-    } else{
-      x.afterElevenToFiveAm=false
+    if (x.time >= 23 || x.time <= 5) {
+      x.afterElevenToFiveAm = true
+    } else {
+      x.afterElevenToFiveAm = false
     }
     x.days = moment.duration(x.days, "minutes").format("d [days],h [hrs], m [min]");
   }
-
-  //
-
-  // let diff=a-b
-
-  // var ts1 = new Date(a).getTime()/1000;
-  // console.log('iiiiiiiiiiiiiiiiiiiiii')
-  // console.log(ts1)
-
-  // var ts2 = new Date(b).getTime()/1000;
-  // console.log('iiiiiiiiiiiiiiiiiiiiii')
-  // console.log(ts2)
-  // let days= ts2-ts1
-  // console.log('iiiiiiiiiiiiiiiiiiiiii')
-  // console.log(days);
-  //    days=days/60
-  // let hello=moment.duration(days, "minutes").format("d [days],h [hrs], m [min]");
-  // console.log('iiiiiiiiiiiiiiiiiiiiii')
-  // console.log(hello);
-  //   req.body.depTime = moment(a).format('lll')
-  //   req.body.arrivTime = moment(req.body.arrivTime).format('lll')
-
-
-
-  // req.body.depTime = new Date(req.body.depTime)
-  // req.body.arrivTime = new Date(req.body.arrivTime)
-
-  // console.log(req.body.depTime,":    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; ---->      :",  req.body.arrivTime);
-
-
-
-  //
-
-
 
 
 
 
 
   console.log(buses, ' this is result ==============');
-
-
-
-
 
   if (buses[0]) {
     res.json({ result: buses, status: true })
@@ -1026,9 +1026,44 @@ app.post('/super/admin/viewbuses', async (req, res) => {
 
 })
 
+app.get('/super/admin/getowners', async (req, res) => {
+
+  let result = await db.get('select * from owners')
+
+  let { rows } = result
+
+
+  for (x of rows) {
+    x.id = x.owner_id
+  }
+
+
+  res.json({ result: rows })
+
+})
 
 
 
+app.put('/super/admin/blockOwner', (req, res) => {
+
+
+  db.get('UPDATE owners SET blocked = $1  WHERE owner_id = $2',
+    [
+      true,
+      req.body.id
+    ])
 
 
 
+})
+
+
+app.put('/super/admin/unBlockOwner', (req, res) => {
+
+  db.get('UPDATE owners SET blocked = $1  WHERE owner_id = $2',
+    [
+      false,
+      req.body.id
+    ])
+
+})

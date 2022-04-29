@@ -72,6 +72,9 @@ const AdminHome = () => {
   
 
 const handleAddBus=()=>{
+  
+   
+ 
   navigate('/admin/addbus')
 }
 const handlViewBus = () => {

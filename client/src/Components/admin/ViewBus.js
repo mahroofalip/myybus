@@ -93,21 +93,21 @@ function ViewBus() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openLoder, setOpensLoder] = useState(false)
   const [email, setEmail] = useState("")
-  const [id,setId]=useState("");
+  const [id, setId] = useState("");
   const openOpt = Boolean(anchorEl);
   const { ownerId } = useParams()
-
+  const [blockErr, setBlockErr] = useState(false)
   const deleteBus = () => {
-         
-    confirm({ description: `This will permanently delete ${editobj.busname} ?` })
-    .then(() =>{
-      axios.delete(`http://localhost:3001/admin/deletebus/${editobj.id}`).then((res) => {
-    
-        console.log('successfully deleted');
-    });
 
-    } )
-    .catch(() => console.log("Deletion cancelled."));
+    confirm({ description: `This will permanently delete ${editobj.busname} ?` })
+      .then(() => {
+        axios.delete(`http://localhost:3001/admin/deletebus/${editobj.id}`).then((res) => {
+
+          console.log('successfully deleted');
+        });
+
+      })
+      .catch(() => console.log("Deletion cancelled."));
 
 
     setAnchorEl(null);
@@ -172,18 +172,22 @@ function ViewBus() {
   ];
 
 
- 
+
 
   useEffect(() => {
 
-   
-    axios.post("http://localhost:3001/admin/getbuses",{ownerId}).then((res) => {
-   
-      setRecords(res.data.result);
-    });
-  },[records]);
 
-console.log('qqqqqqqqqqqqqqqqqqqqqq',records);
+    axios.post("http://localhost:3001/admin/getbuses", { owner_id: ownerId }).then((res) => {
+      if (res.data.block) {
+        setBlockErr("Warning : You can't Access our service your account is blocked")
+      } else {
+        setRecords(res.data.result);
+      }
+
+    });
+  }, [records]);
+
+
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -199,11 +203,11 @@ console.log('qqqqqqqqqqqqqqqqqqqqqq',records);
   useEffect(() => {
 
     let token = localStorage.getItem("token")
-    if(token){
+    if (token) {
       var decoded = jwt_decode(token);
-      console.log("--------------------++----",decoded);
+
       if (decoded.email) setEmail(decoded.email)
-    }else{
+    } else {
       setEmail("")
       return navigate("/admin/login")
     }
@@ -214,16 +218,16 @@ console.log('qqqqqqqqqqqqqqqqqqqqqq',records);
     if (e.target.innerText === "Account") {
       navigate("/admin/login")
     }
-    
+
     if (e.target.innerText === "Logout") {
-     
-      localStorage.setItem("token","");
+
+      localStorage.setItem("token", "");
       setEmail(false)
       navigate("/admin/login")
-  
+
     }
   };
-  
+
 
 
   const populateHome = () => {
@@ -250,7 +254,7 @@ console.log('qqqqqqqqqqqqqqqqqqqqqq',records);
                   xs: "flex",
                   md: "flex",
                   alignItems: "center",
-                  justifyContent: "center",
+
                 },
               }}
             >
@@ -261,10 +265,12 @@ console.log('qqqqqqqqqqqqqqqqqqqqqq',records);
                   ADMIN PANEL
                 </strong>
               </span>
+              {blockErr ? <span style={{ color: "red", marginLeft: "150px" }}><i className="fa fa-warning"></i> {blockErr}</span> : ""}
+
             </Box>
 
             <Box sx={{ flexGrow: 0 }}>
-            <span style={{ marginRight: 20,color:"#012169" }}>{email ? email : ""}</span>
+              <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Remy Sharp" src="" />

@@ -15,7 +15,7 @@ function Login() {
 
   const [emailErr, setEmailErr] = useState(false);
   const [PasswordErr, setPasswordErr] = useState(false);
-
+  const [warning, setWarning] = useState(false)
   const [eye, seteye] = useState(true);
   const [pass, setpass] = useState("password");
   console.log(Email, Password);
@@ -48,26 +48,26 @@ function Login() {
   const submitForm = (e) => {
     e.preventDefault();
 
- 
 
-    let error =false
+
+    let error = false
 
     if (Email.length < 1) {
       setEmailErr(true);
-    error=true
+      error = true
 
     } else {
       setEmailErr(false);
     }
     if (Email === "") {
       setEmailErr(true);
-      error=true
+      error = true
     } else {
       setEmailErr(false);
     }
     if (Password === "") {
       setPasswordErr(true);
-      error=true
+      error = true
     } else {
       setPasswordErr(false);
     }
@@ -81,15 +81,22 @@ function Login() {
         .then((res) => {
           setOpen(false);
           console.log(res.data.user);
-          
+
           let user = res.data.user;
           if (user === 0) {
-            alert('Password wrong');
+            setWarning("Password is Wrong")
           } else if (!user) {
-            alert("Invalid user");
+            setWarning("Invalid user")
           } else {
-            localStorage.setItem("token", res.data.user);
-             navigate("/admin/home");
+
+            if (res.data.block) {
+              setWarning("This Account Is Blocked")
+            } else {
+              localStorage.setItem("token", res.data.user);
+              navigate("/admin/home");
+            }
+
+
           }
         });
     }
@@ -127,10 +134,15 @@ function Login() {
 
                 <div className="hello">
                   <h2>Admin Login</h2>
+                  <p align="center" style={{ color: "red" }} className={` ${warning ? "danger" : "nodanger"}`}>
+                    <i className="fa fa-warning"></i> {warning}
+                  </p>
                 </div>
 
                 <form onSubmit={submitForm}>
+
                   <div className="input_text">
+
                     <input
                       className={` ${emailErr ? "warning" : ""}`}
                       type="email"
@@ -161,6 +173,8 @@ function Login() {
                     <p className={` ${PasswordErr ? "danger" : "nodanger"}`}>
                       <i className="fa fa-warning"></i>Please enter password
                     </p>
+
+
                   </div>
                   <div className="recovery">
                     <p>Recovery Password</p>
@@ -168,9 +182,13 @@ function Login() {
                   <div className="btn">
                     <button type="submit">Sign in</button>
                   </div>
+
+
                 </form>
 
                 <hr />
+
+
               </div>
             </div>
           </div>

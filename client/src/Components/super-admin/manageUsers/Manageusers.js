@@ -84,7 +84,9 @@ function setData(state, action) {
 
 
 
-function ManageCompanies() {
+function ManageUsers() {
+
+
   const confirm = useConfirm();
   const navigate = useNavigate();
   const [editobj, dispath] = useReducer(setData, {})
@@ -93,26 +95,6 @@ function ManageCompanies() {
   const [openLoder, setOpensLoder] = useState(false)
 
   const openOpt = Boolean(anchorEl);
-
-
-  const deleteBus = () => {
-         
-    confirm({ description: `This will permanently delete ${editobj.busname} ?` })
-    .then(() =>{
-      axios.delete(`http://localhost:3001/admin/deletebus/${editobj.id}`).then((res) => {
-    
-        console.log('successfully deleted');
-    });
-
-    } )
-    .catch(() => console.log("Deletion cancelled."));
-
-
-    setAnchorEl(null);
-
-  }
-
-
 
 
   const ManageUsers = () => {
@@ -132,22 +114,64 @@ function ManageCompanies() {
   const columns = [
 
 
-    { field: "id", headerName: "BUS ID", width: 100 },
-    { field: "busname", headerName: "BUS NAME", width: 250 },
-    { field: "registernumber", headerName: "REGISTER NO", width: 250 },
-    { field: "bustype", headerName: "TYPE BUS", width: 150 },
-    { field: "seats", headerName: "SEATS", width: 150, },
+    { field: "id", headerName: "OWNER ID", width: 100 },
+    { field: "owner_name", headerName: "OWNER NAME", width: 200 },
+
+    { field: "owner_email", headerName: "OWNER EMAIL", width: 250 },
+    { field: "mobile", headerName: "OWNER MOB", width: 200, },
+    { field: "company", headerName: "COMPANY", width: 200, },
     {
       field: "OPTIONS",
       renderCell: (cellValues) => {
 
-        const onclick = (event) => {
-          setAnchorEl(event.currentTarget);
-          dispath(cellValues.row)
+        const block = (event) => {
+
+          confirm({ description: `Are you sure to block ${cellValues.row.owner_name} ?` })
+          .then(() =>{
+            axios.put('http://localhost:3001/super/admin/blockOwner',{id:cellValues.row.id}).then((res) => {
+          
+              console.log('successfully blocked');
+          });
+      
+          } )
+          .catch(() => console.log("Block cancelled."));
+      
+      
+          
+      
 
         };
+        
+        const unBlock =()=>{
+          confirm({ description: `Are you sure to Unblock ${cellValues.row.owner_name} ?` })
+          .then(() =>{
+            axios.put('http://localhost:3001/super/admin/unBlockOwner',{id:cellValues.row.id}).then((res) => {
+          
+              console.log('successfully unblocked');
+          });
+      
+          } )
+          .catch(() => console.log("unBlock cancelled."));
+      
+      
+         
 
-        return (
+
+        }
+
+
+        return cellValues.row.blocked ? (<Button
+          id="demo-customized-button"
+          aria-controls={openOpt ? 'demo-customized-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={openOpt ? 'true' : undefined}
+          variant="contained"
+          disableElevation
+          onClick={unBlock}
+
+        >
+          Unblock
+        </Button>) : (
 
           <Button
             id="demo-customized-button"
@@ -155,11 +179,12 @@ function ManageCompanies() {
             aria-haspopup="true"
             aria-expanded={openOpt ? 'true' : undefined}
             variant="contained"
+            style={{ backgroundColor: "green" }}
             disableElevation
-            onClick={onclick}
-            endIcon={<KeyboardArrowDownIcon />}
+            onClick={block}
+
           >
-            Options
+            Block
           </Button>
         );
       },
@@ -170,16 +195,18 @@ function ManageCompanies() {
   ];
 
 
-
-
-
-
   useEffect(() => {
-    axios.get("http://localhost:3001/admin/getbuses").then((res) => {
-    
+    axios.get("http://localhost:3001/super/admin/getowners").then((res) => {
+      console.log('kkkkkkkk', res.data.result);
       setRecords(res.data.result);
     });
   },[records]);
+
+
+
+
+ 
+
 
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
@@ -207,14 +234,14 @@ function ManageCompanies() {
 
   return (
     <>
-     <Nav/>
-     <Tabs/>
-      
+      <Navbar />
+      <Tabs tab1hover="tab" tab2hover="tab" tab3hover="nohover" tab4hover="tab" tab1="#012169" tab2="#012169" tab3="gray" tab4="#012169" />
+
       <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"
       >
-        MANAGE BUS DETAILS
+        MANAGE USERS
       </Typography>
       {/* table */}
 
@@ -231,29 +258,6 @@ function ManageCompanies() {
       </Container>
 
 
-
-      {/* menu */}
-
-
-      <StyledMenu
-        id="demo-customized-menu"
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
-        }}
-        anchorEl={anchorEl}
-        open={openOpt}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={editBus} disableRipple>
-          <EditIcon />
-          Edit
-        </MenuItem>
-        <MenuItem onClick={deleteBus} disableRipple>
-          <DeleteIcon />
-          Delete
-        </MenuItem>
-
-      </StyledMenu>
 
       {/* loder */}
 

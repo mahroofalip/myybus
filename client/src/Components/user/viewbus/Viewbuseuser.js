@@ -1,5 +1,4 @@
 import { useTheme } from '@mui/material/styles';
-
 import AirlineSeatReclineExtraOutlinedIcon from '@mui/icons-material/AirlineSeatReclineExtraOutlined';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -36,7 +35,10 @@ import "../searchBar/search.css";
 import Backdrop from "@mui/material/Backdrop";
 import { Oval } from 'react-loading-icons'
 import { ListItemText } from '@mui/material';
-import SquareIcon from '@mui/icons-material/Square';
+
+import Seats from "./buslayout/Seats"
+
+
 const bull = (
   <Box
     component="span"
@@ -59,11 +61,7 @@ const Wraper = {
   padding: 10,
   border: 20,
 };
-const wraper2 = {
-  backgroundColor: "#d1d4c3",
-  padding: 10,
-  border: 20
-}
+
 
 const inputStyle = {
   color: "black",
@@ -116,9 +114,16 @@ function Viewbusesuser(props) {
   const [afterElevenToFiveAm, setAfterElevenToFiveAm] = React.useState(true);
   const [pic, setPic] = React.useState(true);
   const [SelectSeats, setSelectSeats] = React.useState(false);
+
   // const [HtoL, setHtoL] = React.useState(false);
   // const [LtoH, setLtoH] = React.useState(false);
   // const [none, setNone] = React.useState(false);
+
+  // useEffect(() => {
+  //   console.log(selectedSeates);
+  // }, [selectedSeates])
+
+
   const toggleDrawer = (anchor, open) => (event) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
@@ -318,6 +323,7 @@ function Viewbusesuser(props) {
   };
 
 
+  
 
 
 
@@ -413,6 +419,21 @@ function Viewbusesuser(props) {
 
   console.log("------", busResult);
 
+  // let selectedList =(a)=>{
+  //   alert("hai")
+  //   console.log(a);
+  //   return (
+  //     <>
+    
+  //   <span>{a}</span>
+    
+    
+  //     </>
+  //   )
+  // }
+
+
+
   let busList = (bus) => {
     return (
       <>  <Card sx={{ display: 'flex' }}>
@@ -455,8 +476,9 @@ function Viewbusesuser(props) {
                       < Chip style={{ cursor: 'pointer' }} label="Review" />
 
                       <Chip onClick={() => {
-                        setPic(false)
-                        setSelectSeats(true)
+                         navigate(`/seatslayout/${bus.id}`)
+                        // setPic(false)
+                        // setSelectSeats(true)
                       }} style={{ backgroundColor: "#2b5ebd", color: "white", cursor: 'pointer' }} label="Select seats" />
 
                     </Stack>
@@ -548,9 +570,10 @@ function Viewbusesuser(props) {
 
 
 
-            </Accordion>) : ""}
+            </Accordion>) 
+            : ""}
 
-            {SelectSeats ? (<Accordion >
+            {/* {SelectSeats ? (<Accordion >
               <AccordionSummary
 
                 aria-controls="panel1a-content"
@@ -559,37 +582,11 @@ function Viewbusesuser(props) {
                 <Chip label="Click to select your seat  " />
               </AccordionSummary>
 
-              <Grid style={wraper2} container spacing={2}>
+              
 
 
 
-                <Grid item xs={12} sm={12} md={4} lg={4}>
-                <div> <SquareIcon style={{color:"gray"}} /> <Typography  component="span">Booked Seats</Typography>  </div>
-                <div> <SquareIcon style={{color:"white"}} /> <Typography   component="span">Booked Seats</Typography> </div>
-                <div> <SquareIcon />  <Typography component="span">Booked Seats</Typography> </div>
-                </Grid>
-
-
-                <Grid item xs={12} sm={12} md={4} lg={4}>
-                  sdfsdff
-                </Grid>
-
-
-                <Grid item xs={12} sm={12} md={4} lg={4}>
-                  sfsfs
-                </Grid>
-
-
-
-
-
-
-              </Grid>
-
-
-
-
-            </Accordion>) : ""}
+            </Accordion>) : ""} */}
 
           </Grid>
 
@@ -648,7 +645,7 @@ function Viewbusesuser(props) {
                     style={inputStyle}
                     placeholder="To"
                     name="to"
-                    value={to}
+                    value={to}   
                     onChange={inputEvent}
                     id="input-with-icon-adornment"
                     startAdornment={

@@ -94,12 +94,6 @@ function ManageCompanies() {
 
   const openOpt = Boolean(anchorEl);
 
-  const handleManageCompanies = () => {
-    navigate('/super/admin/managecompanies')
-  }
-  const handleManageUsers = () => {
-    navigate('/admin/viewbus')
-  }
 
 
   const deleteBus = () => {
@@ -225,31 +219,16 @@ function ManageCompanies() {
   return (
     <>
       <Navbar />
-      <div>
-        <Grid sx={{ backgroundColor: '#012169', marginTop: 0 }} container spacing={3}>
-          <Grid sx={{ color: '#fff', backgroundColor: '#012169', border: "solid white", cursor: "pointer" }} item xs={12} sm={2} md={3}>
-            <strong style={{ color: 'white', margin: 40 }}>DASHBOARD</strong>
-          </Grid>
-          <Grid></Grid>
-          <Grid onClick={handleManageCompanies} className="tab" sx={{ backgroundColor: 'gray', border: "solid white" }} item xs={12} sm={3} md={3}>
-            <strong className="tab" style={{ margin: 40, }} >MANAGE COMPANY</strong>
-          </Grid>
-          <Grid onClick={handleManageUsers} className="tab" sx={{ color: '#fff', backgroundColor: '#012169', border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
-            <strong style={{ margin: 40, }}>MANAGE USERS</strong>
-          </Grid>
-          <Grid className="tab" sx={{ color: '#fff', backgroundColor: '#012169', border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
-            <strong className="tab" style={{ margin: 40, }}>REPORTS</strong>
-          </Grid>
-        </Grid>
-      </div>
+      <Tabs tab1hover="tab" tab2hover="nohover" tab3hover="tab" tab4hover="tab" tab1="#012169" tab2="gray" tab3="#012169" tab4="#012169" />
+      
 
-      {/* <Typography
+      <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"
       >
         MANAGE BUS DETAILS
-      </Typography> */}
-      {/* table */}
+      </Typography> 
+     
 
       <Container>
         <div style={{ height: 400, width: "100%", marginTop: 10 }}>
