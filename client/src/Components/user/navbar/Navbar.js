@@ -9,10 +9,12 @@ import Container from "@mui/material/Container";
 import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import { Button } from "@mui/material"
 import "./nav.css";
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
+import TourIcon from '@mui/icons-material/Tour';
 const settings = ["Profile", "Account", "Logout"];
 
 function Navbar() {
@@ -28,58 +30,96 @@ function Navbar() {
   useEffect(() => {
 
     let token = localStorage.getItem("userToken")
-    if(token){
+    if (token) {
       var decoded = jwt_decode(token);
       if (decoded.email) setEmail(decoded.email)
-    }else{
+    } else {
       setEmail("")
     }
-   
-   
+
+
   }, [email])
 
+
+  const myTrip = () => {
+    let token = localStorage.getItem("userToken")
+    if (token) {
+      navigate('/user/managebooking')
+    } else {
+      navigate("/login");
+    }
   
-  
+
+  }
 
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
- 
+
   const navigateTo = (e) => {
+   
+  if(e.target.innerText==='Profile'){
+    let token = localStorage.getItem("userToken")
+    if(token){
+      var decoded = jwt_decode(token);
+      const {id}=decoded
+      console.log(id,'/////////////////////////////ppp');
+      navigate("/user/profile/"+id);
+    }else{
+      navigate("/login");
+    }
+  
+  }
+
 
     if (e.target.innerText === 'Account') {
       navigate("/login");
     }
-    
-   
+
+
     if (e.target.innerText === "Logout") {
-     
-      localStorage.setItem("userToken","");
+
+      localStorage.setItem("userToken", "");
       setEmail(false)
-  
+
     }
 
 
   }
 
+  const home=()=>{
+    navigate("/");
+  }
 
 
 
   return (
-    <AppBar sx={{ backgroundColor: "#012169",paddingBottom:"15px" }} position="static">
+    <AppBar sx={{ backgroundColor: "#012169", paddingBottom: "15px" }} position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "flex" } }}>
             <DirectionsBusIcon />
 
             <h2 className="mybus">
-              <span className="letterStyle">MYBUS</span>
+
+            <Button onClick={home} variant="outlined" className="letterStyle"> <span className="letterStyle">MYBUS</span></Button>
+             
 
             </h2>
           </Box>
 
+
+          <TourIcon />
+          <div style={{ marginRight: "20px" }}>
+            <h5 className="mybus">
+              <Button onClick={myTrip} variant="outlined" className="letterStyle">MYTRIPS</Button>
+            </h5>
+          </div>
           <Box sx={{ flexGrow: 0 }}>
+
+
+
             <span style={{ marginRight: 20 }}>{email ? email : ""}</span>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

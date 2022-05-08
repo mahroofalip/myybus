@@ -4,7 +4,13 @@ import { Button, Box, Container, Typography } from "@mui/material";
 import Navbar from "../../navbar/Navbar";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import TextField from '@mui/material/TextField';
+import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
+import Checkout from '../../checkout/Checkout'
+// import './bookseat.css'
+// import Store from '../../../../redux/Store'
+// import { useDispatch } from 'react-redux'
+// import { setBookDetails } from '../../../../redux/checkoutState/checkoutSlice'
 const Wraper = {
   backgroundColor: "#fff",
   padding: 10,
@@ -28,102 +34,144 @@ const Gender = [
 
 
 
-
 export default function AddPassangers({ data }) {
-
-
-   
-
-
+  // let dispatch = useDispatch()
+  const navigate = useNavigate();
   const [from, setFrom] = useState(data.fromstart)
   const [to, setTo] = useState(data.toend)
   const [busname, setBusName] = useState(data.busname)
-  const [seats, setSeats] = useState(data.SelectedSeats)
-  const [passangersDetails, dispath] = useReducer(reducer, data.TicketsInfo)
+  const [passangers, setPassenger] = useState([...data.TicketsInfo])
+  const [email, setEmail] = useState("")
+  const [mobile, setMobile] = useState("")
+  const [emErr, setEmErr] = useState('')
+  const [mbErr, setMbErr] = useState('')
 
+  const [click, setClick] = useState(false)
 
-  const InputHandle = (key, value, index) => {
+  const updateFieldChanged = index => e => {
+    console.log('index: ' + index);
 
-    dispath({ key, value, index })
+    let newArr = [...passangers];
+    if (e.target.name === 'name') newArr[index].Name = e.target.value;
+    if (e.target.name === 'age') newArr[index].Age = e.target.value;
+    if (e.target.name === 'gender') newArr[index].gender = e.target.value;
 
+    setPassenger(newArr);
   }
 
 
+  const submitForm = (e) => {
+    e.preventDefault();
 
 
-  function reducer(state, action) {
-    console.log("state   :", state);
-    console.log("action  :", action);
-    let arr1 = state
-    let inputName = action.key
-    let inputValue = action.value
-    let ind = action.index
-  
-    switch (ind) {
-      case 0:
-   
-  
-       
-        if (inputName === "name") {
-          arr1[ind].Name = inputValue
-         
-        } else if (inputName === "age") {
-          arr1[ind].Age = inputValue
-         
-        } else {
-          arr1[ind].gender = inputValue
-          return arr1
-        }
-  
-  
-        break;
-      case 1:
-     
-       
-       
-        if (inputName === "name") {
-          arr1[ind].Name = inputValue
-          return arr1
-        } else if (inputName === "age") {
-          arr1[ind].Age = inputValue
-          return arr1
-        } else {
-          arr1[ind].gender = inputValue
-         
-        }
-  
-        break;
-      case 2:
-      
-       
-       
-        if (inputName === "name") {
-          arr1[ind].Name = inputValue
-         
-        } else if (inputName === "age") {
-          arr1[ind].Age = inputValue
-         
-        } else {
-          arr1[ind].gender = inputValue
-         
-        }
-  
-        break;
-      default:
-        alert("Nothing to update")
+
+    let flag = 0
+    for (let i = 0; i < passangers.length; i++) {
+
+      if (passangers[i].Name === '') {
+        passangers[i].NameErr = 'Name is required'
+        passangers[i].NameStatusErr = true
+        flag++
+      } else {
+        passangers[i].NameErr = ''
+        passangers[i].NameStatusErr = false
+
+      }
+      if (passangers[i].Age === '') {
+        passangers[i].AgeErr = 'Age is required'
+        passangers[i].AgeStatusErr = true
+        flag++
+      } else {
+        passangers[i].AgeErr = ''
+        passangers[i].AgeStatusErr = false
+      }
+
     }
-  
-   
-    return arr1
+
+
+
+    if (email === '') {
+      setEmErr('Fild required')
+      flag = 1
+    } else {
+
+      let em = email.split("").reverse().join("");
+
+      if (em.length < 6) {
+
+        setEmErr('Enter Valid email')
+        flag = 1
+
+      } else {
+
+        let em1 = em.includes("@");
+        let em2 = em.includes('moc.')
+        if (em1 && em2) {
+          setEmErr('')
+        } else {
+          flag = 1
+          setEmErr('Enter valid email')
+        }
+
+      }
+
+    }
+    if (mobile === '') {
+      flag = 1
+      setMbErr('Fild required')
+    } else {
+
+      if (mobile.length === 10) {
+
+        setMbErr('')
+
+      } else {
+
+        flag = 1
+        setMbErr('Enter valid number')
+
+      }
+
+    }
+
+    if (flag === 0) {
+
+      data.userContact.email = email
+      data.userContact.mobile = mobile
+
+      setPassenger([...passangers])
+    
+      // dispatch(setBookDetails({data:data}))
+
+      setClick(true)
+    } else {
+     
+      // setClick(false)
+      setPassenger([...passangers])
+    }
+
+    flag = 0
+
+  };
+
+
+  console.log(data, 'ALL DETAILS');
+
+
+  const InputContact = (e) => {
+    if (e.target.name === 'email') {
+      setEmail(e.target.value)
+    } else if (e.target.name === 'mobile') {
+      setMobile(e.target.value)
+    }
   }
-  
 
 
-  
-  console.log(passangersDetails, ":    ***************  ");
-  
-  return (
+  return click ? (
+    <Checkout bookInfo={data} />
+  ) : (
     <>
+
       <Navbar />
 
       <div style={{ backgroundColor: "#fff" }}>
@@ -133,7 +181,7 @@ export default function AddPassangers({ data }) {
 
           <Grid style={Wraper} container spacing={2}>
 
-            <Grid item xs={12} sm={7} md={7} lg={7}>
+            <Grid item xs={12} sm={12} md={7} lg={7}>
               <Typography style={{ color: "brown" }}> <h1  >{from} <ArrowRightAltIcon style={{ color: "brown" }} /> {to}</h1> </Typography>
               <Typography > <h1 style={{ color: "black" }}  >{busname} </h1> </Typography>
               <Typography component="div" variant="h6">
@@ -145,7 +193,7 @@ export default function AddPassangers({ data }) {
 
             </Grid>
 
-            <Grid item xs={12} sm={5} md={5} lg={5}>
+            <Grid item xs={12} sm={12} md={5} lg={5}>
 
               <Box
                 sx={{
@@ -162,6 +210,7 @@ export default function AddPassangers({ data }) {
                   <Button
                     variant="contained"
                     sx={{ backgroundColor: "blue", color: "white" }}
+                    onClick={submitForm}
                   >
                     CONTINUE TO BOOK NOW
                   </Button>
@@ -170,17 +219,17 @@ export default function AddPassangers({ data }) {
                   <Container style={{ display: "flex", justifyContent: "space-between" }}>
 
                     <span>Total fare</span>
-                    <span>₹ 565</span>
+                    <span>₹{data.Total}</span>
                   </Container>
                   <Container style={{ display: "flex", justifyContent: "space-between" }}>
 
-                    <span>Searvice charge</span>
-                    <span>₹ 774</span>
+                    <span>Service charge</span>
+                    <span style={{ color: "green" }}>Free</span>
                   </Container>
                   <Container style={{ display: "flex", justifyContent: "space-between" }}>
 
                     <span>Total Base fare</span>
-                    <span>₹ 255</span>
+                    <span>₹{data.Total}</span>
                   </Container>
                 </strong>
 
@@ -194,14 +243,15 @@ export default function AddPassangers({ data }) {
 
               <Typography ><strong>Enter Traveller Details</strong> </Typography>
 
-              {passangersDetails.map((ticket, index) => {
-              
-           
+
+              {passangers.map((passanger, index) => {
+
+
 
                 return (
                   <div style={{ marginTop: "20px" }}>
 
-                    <Typography sty><strong> Seat No :{ticket.seatNo}</strong> </Typography>
+                    <Typography sty><strong> Seat No :{passanger.seatNo}</strong> </Typography>
 
                     <Box
                       sx={{
@@ -209,44 +259,43 @@ export default function AddPassangers({ data }) {
                         backgroundColor: "white",
                         height: "auto",
                         boxShadow: 7,
+
                       }}
                     >
 
                       <div style={{ padding: "30px" }}>
                         <Grid style={Wraper} container spacing={2}>
                           <Grid item xs={12} sm={5} md={5} lg={5}>
+
                             <TextField
                               name="name"
                               fullWidth
-                              value={ticket.Name}
+                              value={passanger.Name}
                               required
                               id="outlined-required"
                               label="Name"
                               defaultValue="Enter your name"
-                              onChange={(e) => {
+                              onChange={updateFieldChanged(index)}
 
-                                InputHandle(e.target.name, e.target.value, index)
-                              }
-                              }
                             />
+                            {passanger.NameStatusErr ? <p style={{ color: "red", marginTop: "5px" }}>Field required</p> : ""}
                           </Grid>
                           <Grid item xs={12} sm={4} md={4} lg={4}>
+
                             <TextField
                               name="age"
                               fullWidth
                               id="outlined-number"
-                              value={ticket.Age}
+                              value={passanger.Age}
                               label="Age"
                               type="number"
                               InputLabelProps={{
                                 shrink: true,
                               }}
-                              onChange={(e) => {
-                                InputHandle(e.target.name, e.target.value, index)
-                              }
-                              }
 
+                              onChange={updateFieldChanged(index)}
                             />
+                            {passanger.AgeStatusErr ? <p style={{ color: "red", marginTop: "5px" }}>Field required</p> : ""}
                           </Grid>
                           <Grid item xs={12} sm={3} md={3} lg={3}>
                             <TextField
@@ -255,13 +304,9 @@ export default function AddPassangers({ data }) {
                               select
                               name="gender"
                               label="Gender"
-                              value={ticket.gender}
-                              onChange={(e) => {
+                              value={passanger.gender}
 
-                                InputHandle(e.target.name, e.target.value, index)
-                              }
-                              }
-
+                              onChange={updateFieldChanged(index)}
                             >
                               {Gender.map((option) => (
                                 <MenuItem key={option.value} value={option.value}>
@@ -281,12 +326,69 @@ export default function AddPassangers({ data }) {
               })}
 
             </Grid>
+
+            <Grid item xs={12} sm={12} md={6} lg={6}>
+
+              <div style={{ marginTop: "45px" }}>
+                <Typography sty><strong>Enter Contact Details</strong> </Typography>
+                <Box
+                  sx={{
+                    width: "100%",
+                    backgroundColor: "white",
+                    height: "auto",
+                    boxShadow: 7,
+
+                  }}
+                >
+
+                  <div style={{ padding: "30px" }}>
+
+                    <Grid style={Wraper} container spacing={2}>
+                      <Grid item xs={12} sm={12} md={6} lg={6}>
+
+                        <TextField
+                          name="email"
+                          fullWidth
+                          type="email"
+                          required
+                          id="outlined-required"
+                          label="Enter your email"
+                          value={email}
+                          onChange={InputContact}
+
+                        />
+                        {emErr ? <p style={{ color: "red", marginTop: "5px" }}>{emErr}</p> : ""}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={6} lg={6}>
+
+                        <TextField
+                          name="mobile"
+                          fullWidth
+                          required
+                          id="outlined-required"
+                          label="Enter your mobile"
+                          value={mobile}
+                          onChange={InputContact}
+
+
+                        />
+                        {mbErr ? <p style={{ color: "red", marginTop: "5px" }}>{mbErr}</p> : ""}
+                      </Grid>
+                    </Grid>
+                  </div>
+
+
+
+                </Box>
+              </div>
+            </Grid>
+
           </Grid>
         </Container>
 
 
 
-      </div>
+      </div >
 
     </>
   );

@@ -29,7 +29,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useConfirm } from "material-ui-confirm";
 import jwt_decode from "jwt-decode";
 import { useParams } from "react-router-dom";
-
+import ViewListIcon from '@mui/icons-material/ViewList';
 const settings = ["Profile", "Account", "Logout"];
 
 
@@ -115,11 +115,16 @@ function ViewBus() {
   }
 
 
+   const tripDetails =()=>{
+
+   navigate('/admin/tripdetails/' + editobj.id)
+   
+   }
 
 
   const editBus = () => {
 
-    console.log("view bus   ", editobj);
+  
     navigate('/admin/editbus/' + editobj.id)
 
     setAnchorEl(null);
@@ -178,16 +183,19 @@ function ViewBus() {
 
 
     axios.post("http://localhost:3001/admin/getbuses", { owner_id: ownerId }).then((res) => {
+
       if (res.data.block) {
         setBlockErr("Warning : You can't Access our service your account is blocked")
       } else {
+
+  console.log(res.data, ';iuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuyyt');
+
         setRecords(res.data.result);
+
       }
 
     });
-  }, [records]);
-
-
+  }, []);
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -406,6 +414,10 @@ function ViewBus() {
         open={openOpt}
         onClose={handleClose}
       >
+         <MenuItem onClick={tripDetails} disableRipple>
+          <ViewListIcon />
+          Trip Details
+        </MenuItem>
         <MenuItem onClick={editBus} disableRipple>
           <EditIcon />
           Edit

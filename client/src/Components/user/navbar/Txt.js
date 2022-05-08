@@ -1,47 +1,39 @@
+import React, { useState } from "react";
 
+var userDetailContext = React.createContext(null);
 
-// let st = 53 // totl seat
+export default function UserDetailsComponent() {
+  var [userDetails] = useState({
+    name: "Mayank",
+    age: 30
+  });
 
-// let array = []
+  return (
+    <userDetailContext.Provider value={userDetails}>
+      <h1>This is the Parent Component</h1>
+      <hr />
+      <ChildComponent userDetails={userDetails} />
+    </userDetailContext.Provider>
+  );
+}
 
-// while (st > 0) {
+function ChildComponent(props) {
+  return (
+    <div>
+      <h2>This is Child Component</h2>
+      <hr />
+      <SubChildComponent />
+    </div>
+  );
+}
 
-//     let smallArray = []
-//     for (let j = 0; j < 4; j++) {
-//         if(st===0){
-         
-//         }else{
-//             smallArray.push(st)
-//             st--
-//         }
-       
-        
-//     }
-//     array.push(smallArray)
-
-
-// }
-
-// console.log(array);
-
-// let array=[12,41,52,45,21,44]  //coming array
-// let allTicketInfo=[] // obj of array
-// for (let i = 0; i < array.length; i++) {
-  
-  
- 
-//     let obj={
-      
-//        Name:"YourName"+array[i],
-//        Age:null,
-//        Male:"YourSex"+array[i]
-
-//    }
-//    allTicketInfo.push(obj)
-
-    
-
-
-// }
-// console.log(allTicketInfo[0]);
-
+function SubChildComponent(props) {
+  var contextData = React.useContext(userDetailContext);
+  return (
+    <div>
+      <h3>This is Sub Child Component</h3>
+      <h4>User Name: {contextData.name}</h4>
+      <h4>User Age: {contextData.age}</h4>
+    </div>
+  );
+}

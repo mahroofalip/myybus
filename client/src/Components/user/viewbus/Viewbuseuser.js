@@ -4,8 +4,8 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import React, { useState, useEffect } from "react";
 import { styled } from "@mui/material/styles";
-import Divider from '@mui/material/Divider';
 import Drawer from '@mui/material/Drawer';
+import Divider from '@mui/material/Divider';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from "@mui/material/Box";
@@ -115,13 +115,7 @@ function Viewbusesuser(props) {
   const [pic, setPic] = React.useState(true);
   const [SelectSeats, setSelectSeats] = React.useState(false);
 
-  // const [HtoL, setHtoL] = React.useState(false);
-  // const [LtoH, setLtoH] = React.useState(false);
-  // const [none, setNone] = React.useState(false);
 
-  // useEffect(() => {
-  //   console.log(selectedSeates);
-  // }, [selectedSeates])
 
 
   const toggleDrawer = (anchor, open) => (event) => {
@@ -132,30 +126,6 @@ function Viewbusesuser(props) {
     setState({ ...state, [anchor]: open });
   };
 
-  // function listSort() {
-  //   if (!none) {
-  //     setLtoH(false)
-  //     setHtoL(true)
-  //   } else {
-  //     setLtoH(false)
-  //     setHtoL(false)
-  //   }
-
-  //   if (HtoL) {
-  //     busResult.sort((a, b) => {
-  //       return a.prize - b.prize;
-
-
-  //     });
-  //   } else if (LtoH) {
-  //     busResult.sort((a, b) => {
-  //       return b.prize - a.prize;
-
-
-  //     });
-  //   }
-
-  // }
 
 
 
@@ -165,7 +135,7 @@ function Viewbusesuser(props) {
     <Box
       sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
       role="presentation"
-    // onClick={toggleDrawer(anchor, false)}
+
 
     >
       <List>
@@ -263,52 +233,7 @@ function Viewbusesuser(props) {
 
       </List>
       <Divider />
-      {/* <List>
-        <strong style={{ marginLeft: "20px" }}> Price</strong>
-        <ListItem >
 
-          <FormGroup row>
-
-
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={LtoH}
-                  onChange={(event) => {
-
-                    setLtoH(event.target.checked)
-                    setHtoL(!event.target.checked)
-
-                   
-                    // show()
-                  }}
-                />
-              }
-              label="Low to High"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={HtoL}
-                  onChange={(event) => {
-
-                    setHtoL(event.target.checked)
-                    setLtoH(!event.target.checked)
-                    
-                 
-                  }}
-                />
-              }
-              label="High to Low"
-            />
-           
-
-          </FormGroup>
-
-
-        </ListItem>
-
-      </List> */}
 
     </Box>
   );
@@ -323,7 +248,7 @@ function Viewbusesuser(props) {
   };
 
 
-  
+
 
 
 
@@ -405,12 +330,16 @@ function Viewbusesuser(props) {
         setOpen(false)
         setStatus(response.data.status)
         if (response.data.status) {
+
           setBusResult(response.data.result)
 
-          for (let i = 0; i < busResult.lenght; i++) {
-            console.log(busResult[i].prize, "========*", i);
+          if (busResult) {
+            for (let i = 0; i < busResult.lenght; i++) {
+              console.log(busResult[i].prize, "========*", i);
 
+            }
           }
+
         } else {
           navigate('/user/search/notfoud')
         }
@@ -419,18 +348,7 @@ function Viewbusesuser(props) {
 
   console.log("------", busResult);
 
-  // let selectedList =(a)=>{
-  //   alert("hai")
-  //   console.log(a);
-  //   return (
-  //     <>
-    
-  //   <span>{a}</span>
-    
-    
-  //     </>
-  //   )
-  // }
+
 
 
 
@@ -449,12 +367,8 @@ function Viewbusesuser(props) {
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary" component="div">
                   <strong> {bus.fromstart} <ArrowRightAltIcon style={{ position: 'relative', top: "6px" }} /> {bus.toend} </strong>
-
-                  <strong style={{ display: "block" }}> <AirlineSeatReclineExtraOutlinedIcon style={{ backgroundColor: "black", color: "white" }} /> 30 seats left </strong>
                 </Typography>
               </Grid>
-
-
               <Grid item xs={12} sm={6} md={6} lg={7} style={{ padding: 20 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', pl: 1, pb: 1 }}>
                   <Typography component="div" variant="h6">
@@ -476,7 +390,7 @@ function Viewbusesuser(props) {
                       < Chip style={{ cursor: 'pointer' }} label="Review" />
 
                       <Chip onClick={() => {
-                         navigate(`/seatslayout/${bus.id}`)
+                        navigate(`/seatslayout/${bus.id}`)
                         // setPic(false)
                         // setSelectSeats(true)
                       }} style={{ backgroundColor: "#2b5ebd", color: "white", cursor: 'pointer' }} label="Select seats" />
@@ -570,23 +484,10 @@ function Viewbusesuser(props) {
 
 
 
-            </Accordion>) 
-            : ""}
-
-            {/* {SelectSeats ? (<Accordion >
-              <AccordionSummary
-
-                aria-controls="panel1a-content"
-                id="panel1a-header"
-              >
-                <Chip label="Click to select your seat  " />
-              </AccordionSummary>
-
-              
+            </Accordion>)
+              : ""}
 
 
-
-            </Accordion>) : ""} */}
 
           </Grid>
 
@@ -645,7 +546,7 @@ function Viewbusesuser(props) {
                     style={inputStyle}
                     placeholder="To"
                     name="to"
-                    value={to}   
+                    value={to}
                     onChange={inputEvent}
                     id="input-with-icon-adornment"
                     startAdornment={
@@ -723,7 +624,7 @@ function Viewbusesuser(props) {
 
             (
               busResult.map((bus) => {
-
+                console.log("bus  -----------    :", bus);
                 if (AC && bus.bustype === "AC") {
                   if (fiveAmToTenAm && bus.fiveAmToTenAm) {
                     return busList(bus)

@@ -20,10 +20,15 @@ import Viewbusesuser from "./Components/user/viewbus/Viewbuseuser";
 import Notfound from "./Components/user/viewbus/Notfound"
 import Seats from "./Components/user/viewbus/buslayout/Seats"
 import ManageUsers from "./Components/super-admin/manageUsers/Manageusers";
+import Payment from "./Components/user/payment/Payment"
+import ManageBooking from "./Components/user/managebooking/ManageBooking"
+import UserProfie from "./Components/user/Profile/Profile";
+import EditProfile from "../src/profile/EditProfile"
+import Tripdetails from "./Components/admin/tripdetails/Tripdetails"
+import SeatLayout from "./Components/admin/seatlayout/SeatLayout";
 function App() {
 
   return (
-
     <BrowserRouter>
       <ConfirmProvider>
         <Routes>
@@ -40,13 +45,18 @@ function App() {
           <Route path="/super/admin/home" element={<SuperAdminHome />} />
           <Route path="/super/admin/managecompanies" element={<ManageCompanies />} />
           <Route path="/admin/editbus/:busId" element={<Editbus />} />
+          <Route path="/admin/tripdetails/:busId" element={<Tripdetails/>}/>
           <Route path="/user/search/notfoud" element={<Notfound />} />
           <Route path="/test" element={<Test />} />
           <Route path="/super/admin/viewbuses/:ownerId" element={<Displaybus />} />
           <Route path="/user/bus/search/:dataToSearch" element={<Viewbusesuser />} />
-          <Route path="/seatslayout/:selectedBusId" element={<Seats/>}/>
-          <Route path="/super/admin/ManageUsers" element={<ManageUsers/>}/>
-
+          <Route path="/seatslayout/:selectedBusId" element={<Seats />} />
+          <Route path="/super/admin/ManageUsers" element={<ManageUsers />} />
+          <Route path="/user/managebooking" element={<ManageBooking />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/user/profile/:id" element={<UserProfie/>}/>
+          <Route path="/user/editprofile" element={<EditProfile/>}/>
+          <Route path="/admin/seatLayout" element={<SeatLayout/>}/>
         </Routes>
       </ConfirmProvider>
     </BrowserRouter>

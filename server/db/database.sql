@@ -1,29 +1,14 @@
-
 sudo -u postgres psql
 
 CREATE DATABASE mybus;
 
-
-
-
- CREATE TABLE users(
-   id  SERIAL PRIMARY KEY ,
-   name TEXT NOT NULL,
-   email VARCHAR(50)  NOT NULL,
-   password VARCHAR(100)  NOT NULL,
-   mobile VARCHAR(15) NOT NULL
- ) ;
-
-
-
  --super admin 
+
  CREATE TABLE superadmin(
    id  SERIAL PRIMARY KEY ,
    super_admin_email VARCHAR(50)  NOT NULL,
    super_admin_password VARCHAR(100)  NOT NULL
  ) ;
-
-
 
 CREATE TABLE owners(
    owner_id  SERIAL PRIMARY KEY ,
@@ -32,9 +17,27 @@ CREATE TABLE owners(
    owner_password VARCHAR(100)  NOT NULL,
    blocked BOOLEAN NOT NULL,
    mobile VARCHAR(15) NOT NULL,
-   company VARCHAR(50)  NOT NULL
+   company VARCHAR(50)  NOT NULL,
+   status TEXT NOT NULL,
+   birthday TEXT ,
+   gender TEXT ,
+   matrialstatus TEXT,
+   image1 TEXT 
  ) ;
 
+
+ CREATE TABLE users(
+   id  SERIAL PRIMARY KEY ,
+   name TEXT NOT NULL,
+   email VARCHAR(50)  NOT NULL,
+   password VARCHAR(100)  NOT NULL,
+   mobile VARCHAR(15) NOT NULL,
+   status TEXT NOT NULL,
+   birthday TEXT ,
+   gender TEXT ,
+   matrialstatus TEXT,
+   image1 TEXT 
+ ) ;
 
  CREATE TABLE busdetails(
    id SERIAL PRIMARY KEY ,
@@ -55,12 +58,35 @@ CREATE TABLE owners(
    image4 TEXT NOT NULL
   );
 
-  -- // let diff= date2-date
-  -- // console.log(date, date2 ,   "      :", diff );
-
-  -- // var minutes = Math.floor(diff / 60000);
   
-  -- // console.log(minutes);
+    CREATE TABLE passangers(
+    id SERIAL PRIMARY KEY ,
+    trip_id INT NOT NULL,
+    passanger_seat INT NOT NULL,
+    passanger_name TEXT NOT NULL,
+    passanger_age INT NOT NULL,
+    passanger_gender TEXT NOT NULL,
+    bus_id INT NOT NULL,
+    trip_date TEXT NOT NULL,
+    mobile TEXT NOT NULL,
+    email TEXT NOT NULL
+   
+ );
 
-  -- // let samp = moment.duration(minutes, "minutes").format("d [days],h [hrs], m [min]");
-  -- // console.log(samp, '++++++++++++++++++++++++++++++++++++++')
+
+ CREATE TABLE tripdetails(
+   tripid SERIAL PRIMARY KEY NOT NULL ,
+   bus_id INT NOT NULL,
+   user_id INT NOT NULL,
+   contact_email TEXT NOT NULL,
+   contact_mobile VARCHAR(15) NOT NULL,
+   arrivdate TEXT NOT NULL,
+   depdate TEXT NOT NULL,
+   dep_place TEXT NOT NULL,
+   arr_place TEXT NOT NULL,
+   status INT NOT NULL,
+   tripStataus TEXT NOT NULL
+   );
+
+
+  

@@ -45,7 +45,7 @@ function Login() {
   React.useEffect(() => {
     let token = localStorage.getItem("userToken")
     if (token) {
-     return navigate("/")
+      return navigate("/")
     }
   }, [])
 
@@ -154,15 +154,15 @@ function Login() {
         .post("http://localhost:3001/user/Login", { Email, Password, mobileNumber })
         .then((res) => {
           setOpen(false);
-          console.log(res.data.status);
 
-          let user = res.data.status;
-          if (user === 0) {
+          console.log(res.data.status,'  :uuuuuuuuuuuuuuuuuuuuuuuuuu');
+
+
+          if (res.data.status === 0) {
 
             setWarning("Entered password is incorrect !")
-          } else if (!user) {
-
-
+          } else if (!res.data.status) {
+            console.log("invalid user ...........................")
             setWarning("Invalid user !")
           } else {
 
@@ -217,7 +217,7 @@ function Login() {
 
           let user = res.data.status;
           if (!user) {
-            setWarning("Invalid mobile number !")
+            setWarning(" This mobile is not registered !")
           } else {
             setWarning("")
 
@@ -327,7 +327,9 @@ function Login() {
                   <p align="center" className={` ${exist ? "danger" : "nodanger"}`} style={{ color: "red", paddingTop: 5 }}>
                     <i className="fa fa-warning"></i> {exist}
                   </p>
-
+                  <p align="center" className={` ${warning ? "danger" : "nodanger"}`} style={{ color: "red", paddingTop: 5 }}>
+                    <i className="fa fa-warning"></i> {warning}
+                  </p>
                   <div className="input_text">
                     <input
                       style={{ color: "black" }}

@@ -11,12 +11,14 @@ import axios from "axios";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import Navbar from "../../navbar/Navbar"
 import AddPassangers from "../enterdetails/BookSeat";
+import jwt_decode from "jwt-decode";
+
 const Wraper = {
   backgroundColor: "#d1d4c3",
   padding: 10,
   border: 20
 }
-export default function SeatSelection({ data }) {
+export default function SeatSelection() {
   const navigate = useNavigate()
   const [name, setName] = useState([]);
   const [gender, setGender] = useState([]);
@@ -31,16 +33,34 @@ export default function SeatSelection({ data }) {
   const [seatsCont, setSeats] = useState(0)
   const [seatsArray, setSeatsArray] = useState([])
   const [ticketInfo, setTicketInfo] = useState([])
-  useEffect(() => {
+  const [userInfo, setUserInfo] = useState()
 
-    axios.post("http://localhost:3001/user/bus/getOne", { id: selectedBusId }).then((response) => {
+  const [bookedsts,setBookedSts]=useState([])
+  useEffect(() => {  
 
+    axios.post("http://localhost:3001/user/bus/getOne", { id: selectedBusId }).then(async(response) => {
+      console.log(response.data,': yyyyyyyyyyyyyyyyyyyyyyyyyytt');
       setBusResult(response.data.bus)
       setFrom(response.data.bus.fromstart)
       setTo(response.data.bus.toend)
       setSeats(response.data.bus.seats)
       setBusName(response.data.bus.busname)
       setBusName(response.data.bus.busname)
+  
+           
+
+      let token = localStorage.getItem("userToken")
+      if (token) {
+        var decoded = jwt_decode(token);
+        setUserInfo(decoded)
+      }else{
+        navigate('/login')
+      }
+  
+    let bookeds = await axios.post("http://localhost:3001/bookedSeates", { id: selectedBusId,dDate:response.data.bus.departuretime}).then((response) => {
+        //  console.log(response.data.bookedseats, ":     lkkkkkyyyyyyyt  booked seats");
+         setBookedSts(response.data.bookedseats)
+          })
 
 
       if (!seatsArray[1]) {
@@ -64,21 +84,21 @@ export default function SeatSelection({ data }) {
 
         }
 
-
       }
-
-
+  
+     
 
     })
   }, [])
 
-  console.log(seatsArray, 'ppppppppppppppppppppppppppppppppp');
+  // console.log(seatsArray, 'ppppppppppppppppppppppppppppppppp');
 
+  console.log(bookedsts, 'Booeked seats state yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy');
   const getSeatNumber = (e) => {
 
     let newSeat = e.target.value;
 
-   
+
 
     if (seatNumber.includes(newSeat)) {
 
@@ -95,8 +115,12 @@ export default function SeatSelection({ data }) {
         seatNo: newSeat,
         Name: "",
         Age: "",
-        gender: "Male"
-  
+        gender: "Male",
+        NameErr: '',
+        NameStatusErr: false,
+        AgeErr: '',
+        AgeStatusErr: false
+
       }
 
       setSeatnumber([...seatNumber, newSeat]);
@@ -124,8 +148,12 @@ export default function SeatSelection({ data }) {
   };
   const handleSubmitDetails = (e) => {
     if (seatNumber[0]) {
+
       busResult.SelectedSeats = seatNumber
       busResult.TicketsInfo = ticketInfo
+      busResult.Total = busResult.prize * seatNumber.length
+      busResult.userInfo = userInfo
+      busResult.userContact= {email:"",mobile:""}
       setNext(true)
     } else {
       alert("please select atleast one seat")
@@ -136,7 +164,7 @@ export default function SeatSelection({ data }) {
 
 
 
-
+  console.log(busResult, 'kkkkkkkuuuuuttettettggf');
 
   return next ? (<AddPassangers data={busResult} />) : (
     <>
@@ -150,13 +178,13 @@ export default function SeatSelection({ data }) {
 
       <Grid style={Wraper} container spacing={2}>
 
-        <Grid item xs={12} sm={2} md={2} lg={2}>
+        <Grid item xs={12} sm={12} md={2} lg={2}>
           <div> <SquareIcon style={{ color: "blue" }} />  <Typography component="span">Booked Seats</Typography> </div>
           <div> <SquareIcon style={{ color: "#00771a" }} /> <Typography component="span">Selected Seats</Typography> </div>
           <div> <SquareIcon style={{ color: "#9cc613" }} />  <Typography component="span">Avalable Seats</Typography> </div>
           <div>  <AirlineSeatReclineExtraOutlinedIcon /> <Typography component="span"><span>Total Seats : {seatsCont}</span></Typography> </div>
         </Grid>
-        <Grid item xs={12} sm={3} md={3} lg={3}>
+        <Grid item xs={12} sm={12} md={3} lg={3}>
           <div className="column1">
             <div className="plane">
               <form onChange={(e) => getSeatNumber(e)}>
@@ -174,13 +202,33 @@ export default function SeatSelection({ data }) {
                             {
 
                               array.map((seat) => {
-                                return (
-                                  <li className="seat">
-                                    {reservedSeat.indexOf(seat) >= 0 ? <input disabled type="checkbox" value={seat} id={seat} /> : <input type="checkbox" value={seat} id={seat} />}
-                                    <label htmlFor={seat}>{seat}</label>
-                                  </li>
+                              
+                                for (let i = 0; i < bookedsts.length; i++) {
+                                  
+                                  if(bookedsts[i]==seat){
 
-                                )
+                                    console.log(seat,":   44444444444444444444444444  :",bookedsts[i]);
+
+                                    return (
+                                      <li className="seat">
+                                    
+                                      <label style={{backgroundColor:"blue",color:"white"}} htmlFor={seat}>{seat}</label>
+                                      </li>
+                                    )
+                                  }
+                                   
+                                  }
+                                  
+                                
+                                  return (
+                                    <li className="seat">
+                                      {reservedSeat.indexOf(seat) >= 0 ? <input disabled type="checkbox" value={seat} id={seat} /> : <input type="checkbox" value={seat} id={seat} />}
+                                      <label htmlFor={seat}>{seat}</label>
+                                    </li>
+  
+                                  )
+                              
+                                
 
                               })
                             }
@@ -201,7 +249,7 @@ export default function SeatSelection({ data }) {
             </div>
           </div>
         </Grid>
-        <Grid item xs={12} sm={3} md={3} lg={3}>
+        <Grid item xs={12} sm={12} md={3} lg={3}>
 
 
           <div className="column2">
