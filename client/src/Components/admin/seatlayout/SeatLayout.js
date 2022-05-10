@@ -5,7 +5,6 @@ import Toolbar from "@mui/material/Toolbar";
 import Container from "@mui/material/Container";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import { useNavigate, Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
@@ -15,30 +14,16 @@ import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
-import { styled, alpha } from '@mui/material/styles';
-
 import jwt_decode from "jwt-decode";
-
+import  AdminNavbar from "../navbar/Navbar"
 
 const settings = ["Profile", "Account", "Logout"];
 
-
-
-
-
-
-
-
-
 function SeatLayout() {
-
-
 
     const navigate = useNavigate();
 
     const [records, setRecords] = useState();
-
-
 
     const [email, setEmail] = useState("")
 
@@ -69,10 +54,6 @@ function SeatLayout() {
     };
 
 
-
-
-
-
     const columns = [
         { field: "NO", headerName: "NO", width: 100 },
         { field: "passanger_name", headerName: "PASSANGER NAME", width: 190, },
@@ -83,19 +64,8 @@ function SeatLayout() {
     ];
 
 
-
-
-
-
     const [anchorElUser, setAnchorElUser] = React.useState(null);
 
-    const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
 
 
     useEffect(() => {
@@ -128,139 +98,11 @@ function SeatLayout() {
     };
 
 
-
-
-
     return (
         <>
-            <AppBar sx={{ backgroundColor: "#fff" }} position="static">
-                <Container maxWidth="xl">
-                    <Toolbar disableGutters>
-                        <Box
-                            sx={{
-                                flexGrow: 1,
-                                display: {
-                                    xs: "flex",
-                                    md: "flex",
-                                    alignItems: "center",
+           
+           <AdminNavbar tab1hover="tab" tab2hover="tab" tab3hover="nohover" tab4hover="tab" tab1="#012169" tab2="#012169" tab3="gray" tab4="#012169" />
 
-                                },
-                            }}
-                        >
-                            <DirectionsBusIcon style={{ color: "gray", fontSize: 40 }} />
-
-                            <span className="mybus">
-                                <strong style={{ color: "gray", fontWeight: 900 }}>
-                                    ADMIN PANEL
-                                </strong>
-                            </span>
-                            {blockErr ? <span style={{ color: "red", marginLeft: "150px" }}><i className="fa fa-warning"></i> {blockErr}</span> : ""}
-
-                        </Box>
-
-                        <Box sx={{ flexGrow: 0 }}>
-                            <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
-                            <Tooltip title="Open settings">
-                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                    <Avatar alt="Remy Sharp" src="" />
-                                </IconButton>
-                            </Tooltip>
-                            <Menu
-                                sx={{ mt: "45px" }}
-                                id="menu-appbar"
-                                anchorEl={anchorElUser}
-                                anchorOrigin={{
-                                    vertical: "top",
-                                    horizontal: "right",
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: "top",
-                                    horizontal: "right",
-                                }}
-                                open={Boolean(anchorElUser)}
-                                onClose={handleCloseUserMenu}
-                            >
-                                {settings.map((setting) => (
-                                    <MenuItem key={setting} onClick={navigateTo}>
-                                        <Typography textAlign="center">{setting}</Typography>
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </Box>
-                    </Toolbar>
-                </Container>
-            </AppBar>
-            <div>
-                <Grid
-                    sx={{ backgroundColor: "#012169", marginTop: 0 }}
-                    container
-                    spacing={2}
-                >
-                    <Grid onClick={populateHome}
-                        className="tab"
-                        sx={{
-                            color: "#fff",
-                            backgroundColor: "#012169",
-                            border: "solid white",
-                            cursor: "pointer",
-                        }}
-                        item
-                        xs={12}
-                        sm={2}
-                        md={2}
-                    >
-                        <strong style={{ color: "white", margin: 40 }}>DASHBOARD</strong>
-                    </Grid>
-                    <Grid></Grid>
-
-                    <Grid
-                        onClick={handleAddBus}
-                        className="tab"
-                        sx={{
-                            color: "#fff",
-                            backgroundColor: "#012169",
-                            border: "solid white",
-                            cursor: "pointer",
-                        }}
-                        item
-                        xs={12}
-                        sm={2}
-                        md={2}
-                    >
-                        <strong className="tab" style={{ margin: 40 }}>
-                            ADD BUS
-                        </strong>
-                    </Grid>
-
-                    <Grid
-                        sx={{ backgroundColor: "gray", border: "solid white" }}
-                        item
-                        xs={12}
-                        sm={2}
-                        md={2}
-                    >
-                        <strong style={{ margin: 40 }}>VIEW BUS</strong>
-                    </Grid>
-                    <Grid
-                        className="tab"
-                        sx={{
-                            color: "#fff",
-                            backgroundColor: "#012169",
-                            border: "solid white",
-                            cursor: "pointer",
-                        }}
-                        item
-                        xs={12}
-                        sm={2}
-                        md={2}
-                    >
-                        <strong className="tab" style={{ margin: 40 }}>
-                            REPORTS
-                        </strong>
-                    </Grid>
-                </Grid>
-            </div>
             <Typography
                 sx={{ marginTop: 2 }}
                 align="center"
@@ -284,10 +126,9 @@ function SeatLayout() {
                 </div>
             </Container>
 
-
-
         </>
     );
 }
+
 
 export default SeatLayout;

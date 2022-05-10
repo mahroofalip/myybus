@@ -34,33 +34,33 @@ export default function SeatSelection() {
   const [seatsArray, setSeatsArray] = useState([])
   const [ticketInfo, setTicketInfo] = useState([])
   const [userInfo, setUserInfo] = useState()
+  const [baseDate, setBaseDate] = useState()
+  const [bookedsts, setBookedSts] = useState([])
+  useEffect(() => {
 
-  const [bookedsts,setBookedSts]=useState([])
-  useEffect(() => {  
+    axios.post("http://localhost:3001/user/bus/getOne", { id: selectedBusId }).then(async (response) => {
 
-    axios.post("http://localhost:3001/user/bus/getOne", { id: selectedBusId }).then(async(response) => {
-      console.log(response.data,': yyyyyyyyyyyyyyyyyyyyyyyyyytt');
+      console.log(response.data, ': yyyyyyyyyyyyyyyyyyyyyyyyyytt');
       setBusResult(response.data.bus)
       setFrom(response.data.bus.fromstart)
       setTo(response.data.bus.toend)
       setSeats(response.data.bus.seats)
       setBusName(response.data.bus.busname)
       setBusName(response.data.bus.busname)
-  
-           
+      setBaseDate(response.data.bus.baseDpDate)
 
       let token = localStorage.getItem("userToken")
       if (token) {
         var decoded = jwt_decode(token);
         setUserInfo(decoded)
-      }else{
+      } else {
         navigate('/login')
       }
-  
-    let bookeds = await axios.post("http://localhost:3001/bookedSeates", { id: selectedBusId,dDate:response.data.bus.departuretime}).then((response) => {
-        //  console.log(response.data.bookedseats, ":     lkkkkkyyyyyyyt  booked seats");
-         setBookedSts(response.data.bookedseats)
-          })
+
+      let bookeds = await axios.post("http://localhost:3001/bookedSeates", { id: selectedBusId, dDate: response.data.bus.departuretime }).then((response) => {
+
+        setBookedSts(response.data.bookedseats)
+      })
 
 
       if (!seatsArray[1]) {
@@ -85,8 +85,8 @@ export default function SeatSelection() {
         }
 
       }
-  
-     
+
+
 
     })
   }, [])
@@ -153,7 +153,9 @@ export default function SeatSelection() {
       busResult.TicketsInfo = ticketInfo
       busResult.Total = busResult.prize * seatNumber.length
       busResult.userInfo = userInfo
-      busResult.userContact= {email:"",mobile:""}
+      busResult.userContact = { email: "", mobile: "" }
+      busResult.baseDate = baseDate
+
       setNext(true)
     } else {
       alert("please select atleast one seat")
@@ -202,33 +204,33 @@ export default function SeatSelection() {
                             {
 
                               array.map((seat) => {
-                              
-                                for (let i = 0; i < bookedsts.length; i++) {
-                                  
-                                  if(bookedsts[i]==seat){
 
-                                    console.log(seat,":   44444444444444444444444444  :",bookedsts[i]);
+                                for (let i = 0; i < bookedsts.length; i++) {
+
+                                  if (bookedsts[i] === seat) {
+
+                                    console.log(seat, ":   44444444444444444444444444  :", bookedsts[i]);
 
                                     return (
                                       <li className="seat">
-                                    
-                                      <label style={{backgroundColor:"blue",color:"white"}} htmlFor={seat}>{seat}</label>
+
+                                        <label style={{ backgroundColor: "blue", color: "white" }} htmlFor={seat}>{seat}</label>
                                       </li>
                                     )
                                   }
-                                   
-                                  }
-                                  
-                                
-                                  return (
-                                    <li className="seat">
-                                      {reservedSeat.indexOf(seat) >= 0 ? <input disabled type="checkbox" value={seat} id={seat} /> : <input type="checkbox" value={seat} id={seat} />}
-                                      <label htmlFor={seat}>{seat}</label>
-                                    </li>
-  
-                                  )
-                              
-                                
+
+                                }
+
+
+                                return (
+                                  <li className="seat">
+                                    {reservedSeat.indexOf(seat) >= 0 ? <input disabled type="checkbox" value={seat} id={seat} /> : <input type="checkbox" value={seat} id={seat} />}
+                                    <label htmlFor={seat}>{seat}</label>
+                                  </li>
+
+                                )
+
+
 
                               })
                             }

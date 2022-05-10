@@ -69,8 +69,8 @@ CREATE TABLE owners(
     bus_id INT NOT NULL,
     trip_date TEXT NOT NULL,
     mobile TEXT NOT NULL,
-    email TEXT NOT NULL
-   
+    email TEXT NOT NULL,
+    status INT NOT NULL
  );
 
 
@@ -85,8 +85,11 @@ CREATE TABLE owners(
    dep_place TEXT NOT NULL,
    arr_place TEXT NOT NULL,
    status INT NOT NULL,
-   tripStataus TEXT NOT NULL
-   );
+   tripStataus TEXT NOT NULL,
+   total INT NOT NULL,  -- new add
+   booking_date TIMESTAMP NOT NULL,
+   owner_id INT NOT NULL
+);
 
 
   

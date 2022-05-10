@@ -14,7 +14,9 @@ import AirlineSeatReclineExtraOutlinedIcon from '@mui/icons-material/AirlineSeat
 import PersonIcon from '@mui/icons-material/Person';
 import { toast } from "react-toastify";
 import axios from "axios";
+
 import StripeCheckout from "react-stripe-checkout";
+
 import "react-toastify/dist/ReactToastify.css";
 import DialogActions from '@mui/material/DialogActions';
 import Switch from '@mui/material/Switch';
@@ -80,16 +82,19 @@ export default function Checkout({ bookInfo }) {
 
 
     console.log(bookInfo, ':    This is state ticket details');
+
+
     return (
         <>
 
             <Navbar />
+
             <Grid style={Wraper} container spacing={2}>
                 <Grid item xs={12} sm={12} md={6} lg={6}>
 
                     <Box
                         sx={{
-                            // width: "100%",
+                          
 
                             backgroundColor: "white",
                             height: "auto",

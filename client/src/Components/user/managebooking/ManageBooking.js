@@ -20,7 +20,7 @@ const Wraper = {
 export default function ManageBooking() {
 
     const [bookingDetails, setBookingDetails] = useState([])
-
+    const [status, setStatus] = useState(false)
 
     const cancelBooking = (tripid) => {
 
@@ -31,7 +31,7 @@ export default function ManageBooking() {
             .then((res) => {
 
                 if (res.data.status) {
-
+                    setStatus(res.data.status)
                 }
 
             });
@@ -102,7 +102,7 @@ export default function ManageBooking() {
                                     <Grid item xs={12} sm={4} md={4} lg={4}>
                                         <Typography><strong>From</strong></Typography>
                                         <TextField
-                                           
+
                                             fullWidth
                                             value={details.depdate}
 
@@ -111,7 +111,7 @@ export default function ManageBooking() {
                                         />
                                         <TextField
                                             sx={{ mt: "5px" }}
-                                           
+
                                             fullWidth
                                             value={details.dep_place}
 
@@ -119,12 +119,12 @@ export default function ManageBooking() {
                                         />
 
                                     </Grid>
-                                   
+
 
                                     <Grid item xs={12} sm={4} md={4} lg={4}>
                                         <Typography><strong>To</strong></Typography>
                                         <TextField
-                                           
+
                                             fullWidth
                                             value={details.arrivdate}
 
@@ -132,7 +132,7 @@ export default function ManageBooking() {
                                         />
                                         <TextField
                                             sx={{ mt: "5px" }}
-                                           
+
                                             fullWidth
                                             value={details.arr_place}
 
@@ -142,16 +142,16 @@ export default function ManageBooking() {
 
                                         />
                                     </Grid>
-                                   
+
                                     <Grid item xs={12} sm={4} md={4} lg={4}>
                                         <Typography><strong>Action</strong></Typography>
 
-                                        {details.status === 1 ? <Button sx={{minWidth:"200px"}} onClick={() => {
+                                        {details.status === 1 ? <Button sx={{ minWidth: "200px" }} onClick={() => {
                                             cancelBooking(details.tripid)
                                         }} variant='contained'>cancel Trip</Button> : ""}
 
-                                        {details.status === 0 ? <Button  sx={{ backgroundColor: "red",minWidth:"200px" }} variant="contained">Trip Canceld</Button> : ""}
-                                        {details.status === 2 ? <Button  sx={{ backgroundColor: "green",minWidth:"200px" }} variant="contained">Trip Completed</Button> : ""}
+                                        {details.status === 0 ? <Button sx={{ backgroundColor: "red", minWidth: "200px" }} variant="contained"> Trip Canceld </Button> : ""}
+                                        {details.status === 2 ? <Button sx={{ backgroundColor: "green", minWidth: "200px" }} variant="contained">Trip Completed</Button> : ""}
 
                                     </Grid>
                                 </Grid>

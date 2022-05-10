@@ -66,18 +66,20 @@ const Tabs = (props) => {
   const handleManageUsers = () => {
     navigate('/super/admin/ManageUsers')
   }
-  const handleDashbord =()=>{
+  const handleDashbord = () => {
     navigate('/super/admin/home')
+  }
+  const handleReport =() => {
+    navigate('/super/admin/report')
   }
 
 
- 
   return (
     <>
 
       <div>
         <Grid sx={{ backgroundColor: '#012169', marginTop: 0 }} container spacing={3}>
-          <Grid  onClick={handleDashbord} className={props.tab1hover} sx={{ backgroundColor: props.tab1, border: "solid white" }} item xs={12} sm={2} md={3}>
+          <Grid onClick={handleDashbord} className={props.tab1hover} sx={{ backgroundColor: props.tab1, border: "solid white" }} item xs={12} sm={2} md={3}>
             <strong style={{ color: 'white', margin: 40 }}>DASHBOARD</strong>
           </Grid>
 
@@ -87,7 +89,7 @@ const Tabs = (props) => {
           <Grid onClick={handleManageUsers} className={props.tab3hover} sx={{ color: '#fff', backgroundColor: props.tab3, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
             <strong style={{ margin: 40, }}>MANAGE USERS</strong>
           </Grid>
-          <Grid  className={props.tab4hover} sx={{ color: '#fff', backgroundColor: props.tab4, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
+          <Grid onClick={handleReport} className={props.tab4hover} sx={{ color: '#fff', backgroundColor: props.tab4, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
             <strong style={{ margin: 40, }}>REPORTS</strong>
           </Grid>
         </Grid>

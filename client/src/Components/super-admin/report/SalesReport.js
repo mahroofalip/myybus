@@ -13,12 +13,13 @@ import JsPDF from "jspdf";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import Typography from "@mui/material/Typography";
-import Navbar from "../navbar/Navbar"
+import Tabs from "../Tabs/Tabs";
+import Navbar from "../navbar/Navbar";
 import { DataGrid } from "@mui/x-data-grid";
 import Paper from '@mui/material/Paper';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
-const Report = () => {
+const SalesReport = () => {
 
     const [records, setRecords] = useState();
     const { ownerId } = useParams()
@@ -32,9 +33,9 @@ const Report = () => {
     const columns = [
         { field: "id", headerName: "No", width: 150 },
         { field: "depdate", headerName: "Date", width: 200 },
-        { field: "bookings", headerName: "Bookings", width: 200, },
+        { field: "bookings", headerName: "Total Service", width: 200, },
         { field: "totalErnings", headerName: "Total Earnings", width: 200 },
-        { field: "expense", headerName: "Service Charge", width: 200 },
+        { field: "expense", headerName: "Total Service Charge", width: 200 },
         { field: "profit", headerName: "Profit", width: 200 },
 
     ];
@@ -42,7 +43,7 @@ const Report = () => {
 
     useEffect(() => {
 
-        axios.post('http://localhost:3001/admin/report', { ownerId }).then((res) => {
+        axios.get('http://localhost:3001/super/admin/report').then((res) => {
             console.log(res.data.rows);
 
             setRecords(res.data.rows)
@@ -54,10 +55,12 @@ const Report = () => {
 
 
         <>
-            <Navbar tab1hover="tab" tab2hover="tab" tab3hover="tab" tab4hover="nohover" tab1="#012169" tab2="#012169" tab3="#012169" tab4="gray" />
+            <Navbar />
+            <Tabs tab1hover="tab" tab2hover="tab" tab3hover="tab" tab4hover="tnohoverab" tab1="#012169" tab2="#012169" tab3="#012169" tab4="gray" />
+
             <div>
-               
-                <Container  sx={{ marginTop: 2 }}>
+
+                <Container sx={{ marginTop: 2 }}>
                     <Container sx={{
                         border: "solid 1px lightgray",
                         display: "flex",
@@ -78,14 +81,14 @@ const Report = () => {
                 {/* table */}
 
                 <Container id="report" >
-                <Typography
-                    sx={{ marginTop: 1 }}
-                    align="center"
-                >
-                    <span style={{ fontWeight: 900, fontSize: 25 }}>SALES REPORT</span>
+                    <Typography
+                        sx={{ marginTop: 1 }}
+                        align="center"
+                    >
+                        <span style={{ fontWeight: 900, fontSize: 25 }}>SALES REPORT</span>
 
 
-                </Typography>
+                    </Typography>
                     <div style={{ height: 400, width: "100%", marginTop: 10 }}>
                         <DataGrid
                             rows={records}
@@ -102,4 +105,4 @@ const Report = () => {
     )
 }
 
-export default Report
+export default SalesReport

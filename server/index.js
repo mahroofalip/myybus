@@ -499,7 +499,7 @@ app.delete('/admin/deletebus/:id', (req, res) => {
 })
 
 
-// trip dtl
+
 
 app.post('/admin/tripdetails', async (req, res) => {
   console.log("THIS IS TRIP DETAILS   :", req.body);
@@ -510,7 +510,7 @@ app.post('/admin/tripdetails', async (req, res) => {
   booked = []
   trip.rows.map((dt, index) => {
 
-    count = 0
+    var count = 0
     rows.map((pd) => {
 
 
@@ -530,14 +530,14 @@ app.post('/admin/tripdetails', async (req, res) => {
 
 
 app.put('/admin/statusChangeToUpcoming', async (req, res) => {
-  console.log(req.body, "  :    change to upcomingggggggggggggggggggggggggggggggggggggggggggggg");
-  //'UPDATE tripdetails SET tripStataus=$1,  arraivaltime=$2 WHERE id = $3 RETURNING *'
+
   const { busId, depdate } = req.body
 
   const newbus = await db.get(`update tripdetails set tripStataus='Upcoming' where bus_id=${busId} AND depdate='${depdate}' RETURNING *`)
 
   res.json({ result: newbus.rows[0] })
 })
+
 
 app.put('/admin/statusChangeToCompleted', async (req, res) => {
 
@@ -550,21 +550,75 @@ app.put('/admin/statusChangeToCompleted', async (req, res) => {
 
 })
 
+
 app.post('/admin/View/Passangers', async (req, res) => {
 
   const { busId, date } = req.body
 
-  const {rows} = await db.get(`select * from passangers where bus_id=${busId} AND trip_date='${date}'`)
-  
-  let result = await rows.map((row,index)=>{
-    row.NO=index+1
+  const { rows } = await db.get(`select * from passangers where bus_id=${busId} AND trip_date='${date}'`)
+
+  let result = await rows.map((row, index) => {
+    row.NO = index + 1
     return row
   })
   console.log(result);
 
-  res.json({result:result,date})
+  res.json({ result: result, date })
 
 })
+
+
+
+app.post('/admin/report', async (req, res) => {
+
+  console.log("THIS IS ADMIN REPORT", req.body)
+
+  const { ownerId } = req.body
+
+  const { rows } = await db.get(`select DISTINCT ON (depdate) * from tripdetails where owner_id=${ownerId} `)
+
+  let passangers = await db.get('SELECT * FROM passangers where status=1')
+
+  if (passangers.rows[0]) {
+
+
+    rows.map((dt, index) => {
+
+      var count = 0
+
+      passangers.rows.map((pd) => {
+
+
+        if (dt.bus_id == pd.bus_id && dt.depdate === pd.trip_date) {
+
+          count++
+
+        }
+
+      })
+      rows[index].bookings = count
+      rows[index].id = index + 1
+      rows[index].totalErnings = rows[index].bookings * rows[index].total
+      rows[index].expense = (rows[index].totalErnings / 100) * 10
+      rows[index].profit = rows[index].totalErnings - rows[index].expense
+
+      return
+    })
+
+
+
+
+
+
+    res.json({ rows })
+
+
+  }
+
+
+
+})
+
 
 
 app.post("/user/otp/request", async (req, res) => {
@@ -598,7 +652,7 @@ app.post("/user/otp/request", async (req, res) => {
 
 
 app.post("/user/otp/verify", (req, res) => {
-  console.log("i am called verify");
+
 
   USERDATA = JSON.parse(req.body.USER);
 
@@ -843,6 +897,8 @@ app.post('/user/bus/getOne', async (req, res) => {
 
   if (bus.rows[0]) {
     for (x of bus.rows) {
+
+      x.baseDpDate = x.departuretime
       x.departuretime = moment(x.departuretime).format('lll')
       x.arraivaltime = moment(x.arraivaltime).format('lll')
 
@@ -890,13 +946,12 @@ app.post('/user/bus/search', async (req, res) => {
 
   for (x of result) {
     x.days = x.arraivaltime - x.departuretime
+
     x.dTime = moment(x.departuretime).format('lll')
 
     x.departuretime = moment(x.departuretime).format('L')
 
   }
-
-
 
   let filtered = await result.map((bus) => {
 
@@ -960,7 +1015,7 @@ app.post('/user/bus/search', async (req, res) => {
 
 
   if (buses[0]) {
-
+    console.log(buses, "pppppppppppppppppppppppppppppppppppkj");
     res.json({ result: buses, status: true })
   } else {
     res.json({ status: false })
@@ -978,12 +1033,7 @@ app.post("/checkout", async (req, res) => {
   let status;
   try {
 
-
-
     const { bookInfo, token } = req.body;
-
-    console.log("booooke infooooooooooooooooooooooooooooo          :", bookInfo);
-
     const customer = await stripe.customers.create({
       email: token.email,
       source: token.id,
@@ -1015,7 +1065,7 @@ app.post("/checkout", async (req, res) => {
     );
 
     const newTicket = await db.get(
-      "INSERT INTO tripdetails(bus_id,user_id,contact_email,contact_mobile,arrivdate,depdate,dep_place,arr_place,tripStataus,status) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *",
+      "INSERT INTO tripdetails(bus_id,user_id,contact_email,contact_mobile,arrivdate,depdate,dep_place,arr_place,tripStataus,total,booking_date,owner_id,status) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) RETURNING *",
       [
         bookInfo.id,
         bookInfo.userInfo.id,
@@ -1026,13 +1076,16 @@ app.post("/checkout", async (req, res) => {
         bookInfo.fromstart,
         bookInfo.toend,
         "Parking",
+        bookInfo.prize,
+        bookInfo.baseDate,
+        bookInfo.owner_id,
         1
       ]
     );
 
     await bookInfo.TicketsInfo.map((passanger) => {
       db.get(
-        "INSERT INTO passangers(trip_id , passanger_seat , passanger_name , passanger_age,passanger_gender,bus_id,trip_date,mobile,email) values($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+        "INSERT INTO passangers(trip_id , passanger_seat , passanger_name , passanger_age,passanger_gender,bus_id,trip_date,mobile,email,status) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
         [
           newTicket.rows[0].tripid,
           passanger.seatNo,
@@ -1043,10 +1096,11 @@ app.post("/checkout", async (req, res) => {
           bookInfo.departuretime,
           bookInfo.userContact.mobile,
           bookInfo.userContact.email,
+          1
         ]
       );
     })
- 
+
     status = "success";
 
   } catch (error) {
@@ -1079,7 +1133,12 @@ app.put('/bookingcancel', (req, res) => {
       0,
       req.body.tripid
     ])
-
+  db.get('UPDATE passangers SET status = $1  WHERE trip_id = $2',
+    [
+      0,
+      req.body.tripid
+    ])
+  res.json({ status: true })
 })
 
 app.post('/user/profile', async (req, res) => {
@@ -1137,9 +1196,6 @@ app.put('/edit/profile', async (req, res) => {
   } else {
 
     console.log("this req for update admin profile");
-    //admin prfile edit 
-
-
 
   }
 })
@@ -1229,12 +1285,6 @@ app.get('/super/admin/getcompanies', async (req, res) => {
   })
 
 
-
-
-  // let result = await db.get(`SELECT * 
-  // FROM "owners" 
-  // JOIN "busdetails" ON "owners"."owner_id" = "busdetails"."owner_id"`)
-
   res.json({ result: owner })
 
 })
@@ -1288,5 +1338,18 @@ app.put('/super/admin/unBlockOwner', (req, res) => {
       false,
       req.body.id
     ])
+
+})
+
+
+app.get('/super/admin/report', async (req, res) => {
+
+  console.log("THIS IS SALES REPORT ");
+
+  let { rows } = await db.get(`SELECT * FROM tripdetails  WHERE tripStataus='Completed'`)
+
+  console.log(rows, '    :      iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii676');
+
+
 
 })

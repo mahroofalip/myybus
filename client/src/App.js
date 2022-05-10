@@ -26,6 +26,8 @@ import UserProfie from "./Components/user/Profile/Profile";
 import EditProfile from "../src/profile/EditProfile"
 import Tripdetails from "./Components/admin/tripdetails/Tripdetails"
 import SeatLayout from "./Components/admin/seatlayout/SeatLayout";
+import AdminReport from "./Components/admin/report/Report";
+import SuperAdminReport from "./Components/super-admin/report/SalesReport"
 function App() {
 
   return (
@@ -45,7 +47,7 @@ function App() {
           <Route path="/super/admin/home" element={<SuperAdminHome />} />
           <Route path="/super/admin/managecompanies" element={<ManageCompanies />} />
           <Route path="/admin/editbus/:busId" element={<Editbus />} />
-          <Route path="/admin/tripdetails/:busId" element={<Tripdetails/>}/>
+          <Route path="/admin/tripdetails/:busId" element={<Tripdetails />} />
           <Route path="/user/search/notfoud" element={<Notfound />} />
           <Route path="/test" element={<Test />} />
           <Route path="/super/admin/viewbuses/:ownerId" element={<Displaybus />} />
@@ -54,9 +56,11 @@ function App() {
           <Route path="/super/admin/ManageUsers" element={<ManageUsers />} />
           <Route path="/user/managebooking" element={<ManageBooking />} />
           <Route path="/payment" element={<Payment />} />
-          <Route path="/user/profile/:id" element={<UserProfie/>}/>
-          <Route path="/user/editprofile" element={<EditProfile/>}/>
-          <Route path="/admin/seatLayout" element={<SeatLayout/>}/>
+          <Route path="/user/profile/:id" element={<UserProfie />} />
+          <Route path="/user/editprofile" element={<EditProfile />} />
+          <Route path="/admin/seatLayout" element={<SeatLayout />} />
+          <Route path="/admin/incomreport/:ownerId" element={<AdminReport />} />
+          <Route path="/super/admin/report" element={<SuperAdminReport />} />
         </Routes>
       </ConfirmProvider>
     </BrowserRouter>
