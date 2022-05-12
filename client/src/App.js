@@ -36,7 +36,7 @@ function App() {
         <Routes>
           <Route path="/admin/login" element={<Login />} />
           <Route path="/admin/signup" element={<Signup />} />
-          <Route path="/admin/home" element={<AdminHome />} />
+          <Route path="/admin/home/:owner_id" element={<AdminHome />} />
           <Route path="/" element={<MainHome />} />
           <Route path="/login" element={<UserLogin />} />
           <Route path="/signup" element={<UserSignup />} />

@@ -27,7 +27,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useConfirm } from "material-ui-confirm";
 import jwt_decode from "jwt-decode";
 import { useParams } from "react-router-dom";
-
+import AdminNavbar from "../navbar/Navbar"
 const settings = ["Profile", "Account", "Logout"];
 
 
@@ -96,7 +96,7 @@ function Tripdetails() {
   const [openLoder, setOpensLoder] = useState(false)
   const [email, setEmail] = useState("")
   const [id, setId] = useState("");
-  const [state,setState]=useState("")
+  const [state, setState] = useState("")
   const { ownerId } = useParams()
   const [blockErr, setBlockErr] = useState(false)
 
@@ -115,9 +115,9 @@ function Tripdetails() {
 
 
   const ChangeToUpcoming = () => {
-   
-      console.log(editobj,"  :   sssssssssssssss");
-    axios.put('http://localhost:3001/admin/statusChangeToUpcoming', { busId :editobj.bus_id,depdate :editobj.depdate}).then((res) => {
+
+
+    axios.put('http://localhost:3001/admin/statusChangeToUpcoming', { busId: editobj.bus_id, depdate: editobj.depdate }).then((res) => {
       console.log(res.data.result);
       setState(res.data.result.tripstataus)
 
@@ -126,8 +126,8 @@ function Tripdetails() {
     setAnchorEl(null);
   };
   const ChangeToCompleted = () => {
-    
-    axios.put('http://localhost:3001/admin/statusChangeToCompleted', { busId :editobj.bus_id,depdate :editobj.depdate}).then((res) => {
+
+    axios.put('http://localhost:3001/admin/statusChangeToCompleted', { busId: editobj.bus_id, depdate: editobj.depdate }).then((res) => {
       console.log(res.data.result);
       setState(res.data.result.tripstataus)
     });
@@ -136,9 +136,9 @@ function Tripdetails() {
   };
 
   const SeatView = () => {
-     localStorage.setItem("busId_toGet_seatLayout_admin", editobj.bus_id);
+    localStorage.setItem("busId_toGet_seatLayout_admin", editobj.bus_id);
     localStorage.setItem("busDepDate_toGet_seatLayout_admin", editobj.depdate);
-    navigate("/admin/seatLayout");   
+    navigate("/admin/seatLayout");
 
     setAnchorEl(null);
   }
@@ -149,7 +149,7 @@ function Tripdetails() {
     setAnchorEl(null);
 
   }
- 
+
 
   const columns = [
 
@@ -255,134 +255,11 @@ function Tripdetails() {
 
   return (
     <>
-      <AppBar sx={{ backgroundColor: "#fff" }} position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: {
-                  xs: "flex",
-                  md: "flex",
-                  alignItems: "center",
+    
+      <AdminNavbar tab1hover="tab" tab2hover="tab" tab3hover="nohover" tab4hover="tab" tab1="#012169" tab2="#012169" tab3="gray" tab4="#012169" />
 
-                },
-              }}
-            >
-              <DirectionsBusIcon style={{ color: "gray", fontSize: 40 }} />
 
-              <span className="mybus">
-                <strong style={{ color: "gray", fontWeight: 900 }}>
-                  ADMIN PANEL
-                </strong>
-              </span>
-              {blockErr ? <span style={{ color: "red", marginLeft: "150px" }}><i className="fa fa-warning"></i> {blockErr}</span> : ""}
-
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={navigateTo}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-      <div>
-        <Grid
-          sx={{ backgroundColor: "#012169", marginTop: 0 }}
-          container
-          spacing={2}
-        >
-          <Grid onClick={populateHome}
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ color: "white", margin: 40 }}>DASHBOARD</strong>
-          </Grid>
-          <Grid></Grid>
-
-          <Grid
-            onClick={handleAddBus}
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong className="tab" style={{ margin: 40 }}>
-              ADD BUS
-            </strong>
-          </Grid>
-
-          <Grid
-            sx={{ backgroundColor: "gray", border: "solid white" }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>VIEW BUS</strong>
-          </Grid>
-          <Grid
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong className="tab" style={{ margin: 40 }}>
-              REPORTS
-            </strong>
-          </Grid>
-        </Grid>
-      </div>
+      
       <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"

@@ -142,10 +142,7 @@ app.post("/admin/addbus", verifyBlock, async (req, res) => {
   req.body.depTime = moment(req.body.depTime).format();
 
   req.body.arrivTime = moment(req.body.arrivTime).format();
-  console.log("llllllllllllllllllllllllllllllllllll");
-  console.log(req.body);
-  console.log(req.body);
-  console.log("llllllllllllllllllllllllllllllllllll");
+ 
   const permit = {
     image: req.body.permit,
   };
@@ -544,7 +541,7 @@ app.put('/admin/statusChangeToCompleted', async (req, res) => {
   const { busId, depdate } = req.body
 
   const newbus = await db.get(`update tripdetails set tripStataus='Completed', status=2 where bus_id=${busId} AND depdate='${depdate}' RETURNING *`)
-
+  db.get(`update passangers set  status=2 where bus_id=${busId} AND trip_date='${depdate}'`)
   res.json({ result: newbus.rows[0] })
 
 
@@ -1085,7 +1082,7 @@ app.post("/checkout", async (req, res) => {
 
     await bookInfo.TicketsInfo.map((passanger) => {
       db.get(
-        "INSERT INTO passangers(trip_id , passanger_seat , passanger_name , passanger_age,passanger_gender,bus_id,trip_date,mobile,email,status) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)",
+        "INSERT INTO passangers(trip_id , passanger_seat , passanger_name , passanger_age,passanger_gender,bus_id,trip_date,mobile,email,owner_id,total,status) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",
         [
           newTicket.rows[0].tripid,
           passanger.seatNo,
@@ -1096,6 +1093,8 @@ app.post("/checkout", async (req, res) => {
           bookInfo.departuretime,
           bookInfo.userContact.mobile,
           bookInfo.userContact.email,
+          bookInfo.owner_id,
+          bookInfo.prize,
           1
         ]
       );
@@ -1346,9 +1345,113 @@ app.get('/super/admin/report', async (req, res) => {
 
   console.log("THIS IS SALES REPORT ");
 
-  let { rows } = await db.get(`SELECT * FROM tripdetails  WHERE tripStataus='Completed'`)
 
-  console.log(rows, '    :      iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii676');
+  const { rows } = await db.get(`select DISTINCT ON (depdate) * from tripdetails where tripStataus='Completed'`)
+
+  let passangers = await db.get('SELECT * FROM passangers')
+
+  if (passangers.rows[0]) {
+
+
+    rows.map((dt, index) => {
+
+      var count = 0
+
+      passangers.rows.map((pd) => {
+
+
+        if (dt.bus_id == pd.bus_id && dt.depdate === pd.trip_date) {
+
+          count++
+
+        }
+
+      })
+      rows[index].bookings = count
+      rows[index].id = index + 1
+      rows[index].totalErnings = rows[index].bookings * rows[index].total
+      rows[index].profit = (rows[index].totalErnings / 100) * 10
+      rows[index].percentage = 10
+      rows[index].expense = rows[index].totalErnings - rows[index].profit
+
+
+      return
+    })
+
+
+
+    res.json({ rows })
+
+
+  }
+
+
+})
+
+app.post('/admin/dashboard/bookings', async (req, res) => {
+  const { owner_id } = req.body
+  let Cancelled = await db.get(`select * from passangers where owner_id = ${owner_id} AND status=0`)
+  let Upcoming = await db.get(`select * from passangers where owner_id = ${owner_id} AND status=1`)
+  let Completed = await db.get(`select * from passangers where owner_id = ${owner_id} AND status=2`)
+  let Total = await db.get(`select * from passangers where owner_id = $1`, [owner_id])
+
+
+  let date = new Date()
+  date = moment(date).format('lll')
+
+  date = date.slice(0, 3)
+ 
+
+
+
+  let cancel = Cancelled.rows.map((row) => {
+    let x = row.trip_date.slice(0, 3)
+    if (date === x) {
+      return row
+    }
+  })
+
+  let coming = Upcoming.rows.map((row) => {
+
+    let x = row.trip_date.slice(0, 3)
+
+    if (date === x) {
+      return row
+    }
+
+  })
+
+
+  let complete = Completed.rows.map((row) => {
+
+    let x = row.trip_date.slice(0, 3)
+
+    if (date === x) {
+      return row
+    }
+
+  })
+
+
+  let totalErnings = 0
+  for (x of Completed.rows) {
+    totalErnings = totalErnings + x.total
+  }
+
+
+  let cancelled = cancel.length
+  let totcancel = Cancelled.rows.length
+  let upcoming = coming.length
+  let completed = complete.length
+  let total = Total.rows.length
+ 
+  res.json({ cancelled, upcoming, completed, total, totalErnings,totcancel })
+})
+
+
+app.post('/admin/dashboard/barchart',(req,res)=>{
+
+  console.log(req.body);
 
 
 

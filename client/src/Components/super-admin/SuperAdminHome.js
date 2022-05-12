@@ -43,6 +43,9 @@ const SuperAdminHome = () => {
     
       <Navbar />
       <Tabs tab1hover="nohover" tab2hover="tab" tab3hover="tab" tab4hover="tab" tab1="gray" tab2="#012169" tab3="#012169" tab4="#012169" />
+
+       
+
     
     </>
   );

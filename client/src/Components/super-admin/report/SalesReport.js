@@ -25,18 +25,21 @@ const SalesReport = () => {
     const { ownerId } = useParams()
     const generatePDF = () => {
         const report = new JsPDF("portrait", "pt", "a2");
-        report.html(document.querySelector("#report")).then(() => {
-            report.save("admin_report.pdf");
+        report.html(document.querySelector("#salereport")).then(() => {
+            report.save("super_admin_report.pdf");
         });
     };
 
     const columns = [
-        { field: "id", headerName: "No", width: 150 },
-        { field: "depdate", headerName: "Date", width: 200 },
-        { field: "bookings", headerName: "Total Service", width: 200, },
-        { field: "totalErnings", headerName: "Total Earnings", width: 200 },
-        { field: "expense", headerName: "Total Service Charge", width: 200 },
-        { field: "profit", headerName: "Profit", width: 200 },
+
+        { field: "id", headerName: "NO", width: 50 },
+        { field: "depdate", headerName: "SERVICE DATE", width: 200 },
+        { field: "owner_id", headerName: "OWNER ID", width: 100 },
+        { field: "bus_id", headerName: "BUS ID", width: 150 },
+        { field: "bookings", headerName: "TRAVALLERS", width: 150 },
+        { field: "totalErnings", headerName: "TOTAL EARNINGS", width: 180 },
+        { field: "expense", headerName: "SERVICE COST", width: 200 },
+        { field: "profit", headerName: "Profit", width: 100 },
 
     ];
 
@@ -80,7 +83,7 @@ const SalesReport = () => {
                 </Container>
                 {/* table */}
 
-                <Container id="report" >
+                <Container id="salereport" >
                     <Typography
                         sx={{ marginTop: 1 }}
                         align="center"

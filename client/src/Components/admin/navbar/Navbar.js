@@ -88,10 +88,13 @@ const handleReport =()=>{
 
 }
 
-
+const handleHome =()=>{
+  navigate('/admin/home/' +owner_id)
+}
 
   return (
     <>
+    <div style={{ position: "sticky", top: 0 }}>
       <AppBar sx={{ backgroundColor: "#fff" }} position="static">
         <Container maxWidth="xl">
           <Toolbar disableGutters>
@@ -139,7 +142,7 @@ const handleReport =()=>{
       </AppBar>
     <div>
       <Grid sx={{backgroundColor:'#012169', marginTop: 0}} container spacing={2}>
-        <Grid sx={{backgroundColor:props.tab1}} className={props.tab1hover} item xs={12} sm={2} md={2}>
+        <Grid onClick={handleHome}  sx={{backgroundColor:props.tab1}} className={props.tab1hover} item xs={12} sm={2} md={2}>
          <strong style={{color:'white',margin:40}}>DASHBOARD</strong> 
         </Grid>
        
@@ -153,6 +156,7 @@ const handleReport =()=>{
         <strong className="tab" style={{margin:40,}}>REPORTS</strong>
         </Grid>
       </Grid>
+      </div>
       </div>
     </>
   );

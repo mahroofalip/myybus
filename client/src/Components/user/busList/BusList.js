@@ -11,7 +11,7 @@ function BusList() {
   return (
     <>
       <Container sx={{ marginTop: 1 }}>
-        <Grid container spacing={4}>
+        <Grid  spacing={2}>
           <Grid item xs={12} sm={6} md={4}>
             <Container>
             <ListItem xs alignItems="flex-start">

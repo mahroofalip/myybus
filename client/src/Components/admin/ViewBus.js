@@ -30,6 +30,7 @@ import { useConfirm } from "material-ui-confirm";
 import jwt_decode from "jwt-decode";
 import { useParams } from "react-router-dom";
 import ViewListIcon from '@mui/icons-material/ViewList';
+import AdminNavbar from "./navbar/Navbar";
 const settings = ["Profile", "Account", "Logout"];
 
 
@@ -115,16 +116,16 @@ function ViewBus() {
   }
 
 
-   const tripDetails =()=>{
+  const tripDetails = () => {
 
-   navigate('/admin/tripdetails/' + editobj.id)
-   
-   }
+    navigate('/admin/tripdetails/' + editobj.id)
+
+  }
 
 
   const editBus = () => {
 
-  
+
     navigate('/admin/editbus/' + editobj.id)
 
     setAnchorEl(null);
@@ -188,7 +189,7 @@ function ViewBus() {
         setBlockErr("Warning : You can't Access our service your account is blocked")
       } else {
 
-  console.log(res.data, ';iuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuyyt');
+        console.log(res.data, ';iuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuyyt');
 
         setRecords(res.data.result);
 
@@ -252,134 +253,13 @@ function ViewBus() {
 
   return (
     <>
-      <AppBar sx={{ backgroundColor: "#fff" }} position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: {
-                  xs: "flex",
-                  md: "flex",
-                  alignItems: "center",
 
-                },
-              }}
-            >
-              <DirectionsBusIcon style={{ color: "gray", fontSize: 40 }} />
 
-              <span className="mybus">
-                <strong style={{ color: "gray", fontWeight: 900 }}>
-                  ADMIN PANEL
-                </strong>
-              </span>
-              {blockErr ? <span style={{ color: "red", marginLeft: "150px" }}><i className="fa fa-warning"></i> {blockErr}</span> : ""}
+      <AdminNavbar tab1hover="tab" tab2hover="tab" tab3hover="nohover" tab4hover="tab" tab1="#012169" tab2="#012169" tab3="gray" tab4="#012169" />
 
-            </Box>
 
-            <Box sx={{ flexGrow: 0 }}>
-              <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={navigateTo}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-      <div>
-        <Grid
-          sx={{ backgroundColor: "#012169", marginTop: 0 }}
-          container
-          spacing={2}
-        >
-          <Grid onClick={populateHome}
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ color: "white", margin: 40 }}>DASHBOARD</strong>
-          </Grid>
-          <Grid></Grid>
 
-          <Grid
-            onClick={handleAddBus}
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong className="tab" style={{ margin: 40 }}>
-              ADD BUS
-            </strong>
-          </Grid>
-
-          <Grid
-            sx={{ backgroundColor: "gray", border: "solid white" }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>VIEW BUS</strong>
-          </Grid>
-          <Grid
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong className="tab" style={{ margin: 40 }}>
-              REPORTS
-            </strong>
-          </Grid>
-        </Grid>
-      </div>
+    
       <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"
@@ -414,7 +294,7 @@ function ViewBus() {
         open={openOpt}
         onClose={handleClose}
       >
-         <MenuItem onClick={tripDetails} disableRipple>
+        <MenuItem onClick={tripDetails} disableRipple>
           <ViewListIcon />
           Trip Details
         </MenuItem>

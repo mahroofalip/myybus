@@ -84,7 +84,7 @@ const Tabs = (props) => {
           </Grid>
 
           <Grid onClick={handleManageOwners} className="tab" sx={{ color: '#fff', backgroundColor: props.tab2, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
-            <strong className={props.tab2hover} style={{ margin: 40, }} >MANAGE OWNERS</strong>
+            <strong className={props.tab2hover} style={{ margin: 40, }} >MANAGE COMPANIES</strong>
           </Grid>
           <Grid onClick={handleManageUsers} className={props.tab3hover} sx={{ color: '#fff', backgroundColor: props.tab3, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
             <strong style={{ margin: 40, }}>MANAGE USERS</strong>
