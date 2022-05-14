@@ -35,7 +35,7 @@ const SalesReport = () => {
         { field: "id", headerName: "NO", width: 50 },
         { field: "depdate", headerName: "SERVICE DATE", width: 200 },
         { field: "owner_id", headerName: "OWNER ID", width: 100 },
-        { field: "bus_id", headerName: "BUS ID", width: 150 },
+        { field: "bus_id", headerName: "BUS ID", width: 100 },
         { field: "bookings", headerName: "TRAVALLERS", width: 150 },
         { field: "totalErnings", headerName: "TOTAL EARNINGS", width: 180 },
         { field: "expense", headerName: "SERVICE COST", width: 200 },
@@ -59,7 +59,7 @@ const SalesReport = () => {
 
         <>
             <Navbar />
-            <Tabs tab1hover="tab" tab2hover="tab" tab3hover="tab" tab4hover="tnohoverab" tab1="#012169" tab2="#012169" tab3="#012169" tab4="gray" />
+            <Tabs tab1hover="tab" tab2hover="tab" tab3hover="tab" tab4hover="tab" tab5hover="tnohoverab" tab1="#012169" tab2="#012169" tab3="#012169" tab4="#012169" tab5="gray" />
 
             <div>
 

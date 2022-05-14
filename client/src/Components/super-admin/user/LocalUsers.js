@@ -84,7 +84,7 @@ function setData(state, action) {
 
 
 
-function ManageUsers() {
+function LocalUser() {
 
 
   const confirm = useConfirm();
@@ -93,15 +93,13 @@ function ManageUsers() {
   const [records, setRecords] = useState();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openLoder, setOpensLoder] = useState(false)
-
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
   const openOpt = Boolean(anchorEl);
 
 
   const ManageUsers = () => {
 
-    console.log("view bus   ", editobj);
-    navigate('/admin/editbus/' + editobj.id)
-
+ 
     setAnchorEl(null);
   };
   const handleClose = () => {
@@ -109,26 +107,25 @@ function ManageUsers() {
 
 
   };
-  console.log("uuuuu", editobj);
+
 
   const columns = [
 
 
-    { field: "id", headerName: "OWNER ID", width: 100 },
-    { field: "owner_name", headerName: "OWNER NAME", width: 200 },
+    { field: "id", headerName: "USERS ID", width: 150 },
+    { field: "name", headerName: "USERS NAME", width: 250 },
 
-    { field: "owner_email", headerName: "OWNER EMAIL", width: 250 },
-    { field: "mobile", headerName: "OWNER MOB", width: 200, },
-    { field: "company", headerName: "COMPANY", width: 200, },
-    {
-      field: "OPTIONS",
+    { field: "email", headerName: "USERS EMAIL", width: 300 },
+    { field: "mobile", headerName: "USERS MOB", width: 200, },
+   { field: "OPTIONS",
       renderCell: (cellValues) => {
 
         const block = (event) => {
 
-          confirm({ description: `Are you sure to block ${cellValues.row.owner_name} ?` })
+          confirm({ description: `Are you sure to block ${ cellValues.row.name } ?` })
+
           .then(() =>{
-            axios.put('http://localhost:3001/super/admin/blockOwner',{id:cellValues.row.id}).then((res) => {
+            axios.put('http://localhost:3001/super/admin/blockUser',{id:cellValues.row.id}).then((res) => {
           
               console.log('successfully blocked');
           });
@@ -143,7 +140,7 @@ function ManageUsers() {
         };
         
         const unBlock =()=>{
-          confirm({ description: `Are you sure to Unblock ${cellValues.row.owner_name} ?` })
+          confirm({ description: `Are you sure to Unblock ${cellValues.row.name} ?` })
           .then(() =>{
             axios.put('http://localhost:3001/super/admin/unBlockOwner',{id:cellValues.row.id}).then((res) => {
           
@@ -191,43 +188,21 @@ function ManageUsers() {
       width: 200
 
     }
+    
 
   ];
 
 
   useEffect(() => {
-    axios.get("http://localhost:3001/super/admin/getowners").then((res) => {
-      console.log('kkkkkkkk', res.data.result);
-      setRecords(res.data.result);
+    axios.get("http://localhost:3001/super/admin/localusers").then((res) => {
+      
+      setRecords(res.data.rows);
     });
-  },[records]);
+  },[]);
 
 
+  
 
-
- 
-
-
-
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const navigateTo = (e) => {
-    if (e.target.innerText === "Account") {
-      navigate("/admin/login");
-    }
-  };
-
-  const handleAddBus = () => {
-    navigate("/admin/addbus");
-  };
 
 
 
@@ -235,13 +210,13 @@ function ManageUsers() {
   return (
     <>
       <Navbar />
-      <Tabs tab1hover="tab" tab2hover="tab" tab3hover="nohover" tab4hover="tab" tab1="#012169" tab2="#012169" tab3="gray" tab4="#012169" />
+      <Tabs tab1hover="tab" tab2hover="tab" tab3hover="tab"  tab4hover="nohover" tab5hover="tab" tab1="#012169" tab2="#012169" tab3="#012169" tab4="gray" tab5="#012169"/>
 
       <Typography
         sx={{ marginTop: 2, fontWeight: 900, fontSize: 25 }}
         align="center"
       >
-        MANAGE OWNERS
+        MANAGE USERS
       </Typography>
       {/* table */}
 
@@ -273,4 +248,4 @@ function ManageUsers() {
   );
 }
 
-export default ManageUsers;
+export default LocalUser;

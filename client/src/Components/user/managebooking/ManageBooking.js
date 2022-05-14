@@ -22,6 +22,10 @@ export default function ManageBooking() {
     const [bookingDetails, setBookingDetails] = useState([])
     const [status, setStatus] = useState(false)
 
+    const addReview = () => {
+        alert('review')
+    }
+
     const cancelBooking = (tripid) => {
 
         axios
@@ -152,7 +156,7 @@ export default function ManageBooking() {
 
                                         {details.status === 0 ? <Button sx={{ backgroundColor: "red", minWidth: "200px" }} variant="contained"> Trip Canceld </Button> : ""}
                                         {details.status === 2 ? <Button sx={{ backgroundColor: "green", minWidth: "200px" }} variant="contained">Trip Completed</Button> : ""}
-
+                                        {details.status === 2 ? <Button onClick={addReview} sx={{ minWidth: "200px",marginTop:"20px" }} variant="outlined">Add Review</Button> : ""}
                                     </Grid>
                                 </Grid>
                             </div>

@@ -31,7 +31,7 @@ import jwt_decode from "jwt-decode";
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-
+import AdminNavbar from '../navbar/Navbar'
 const Input = styled("input")({
   display: "none",
 });
@@ -428,131 +428,8 @@ const Editbus = () => {
 
   return (
     <>
-
-      <AppBar sx={{ backgroundColor: "#fff" }} position="static">
-        <Container maxWidth="xl">
-          <Toolbar disableGutters>
-            <Box
-              sx={{
-                flexGrow: 1,
-                display: {
-                  xs: "flex",
-                  md: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                },
-              }}
-            >
-              <DirectionsBusIcon style={{ color: "gray", fontSize: 40 }} />
-
-              <span className="mybus">
-                <strong style={{ color: "gray", fontWeight: 900 }}>
-                  ADMIN PANEL
-                </strong>
-              </span>
-            </Box>
-
-            <Box sx={{ flexGrow: 0 }}>
-              <span style={{ marginRight: 20, color: "#012169" }}>{email ? email : ""}</span>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="Remy Sharp" src="" />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={navigateTo}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-      <div>
-        <Grid
-          sx={{ backgroundColor: "#012169", marginTop: 0 }}
-          container
-          spacing={2}
-        >
-          <Grid
-            onClick={populateHome}
-            className="tab"
-            sx={{
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ color: "white", margin: 40 }}>DASHBOARD</strong>
-          </Grid>
-          <Grid></Grid>
-          <Grid
-            sx={{
-              color: "#fff",
-              backgroundColor: "gray",
-              border: "solid white",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>EDIT BUS</strong>
-          </Grid>
-          <Grid onClick={handlViewBus}
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>VIEW BUS</strong>
-          </Grid>
-          <Grid
-            className="tab"
-            sx={{
-              color: "#fff",
-              backgroundColor: "#012169",
-              border: "solid white",
-              cursor: "pointer",
-            }}
-            item
-            xs={12}
-            sm={2}
-            md={2}
-          >
-            <strong style={{ margin: 40 }}>REPORTS</strong>
-          </Grid>
-        </Grid>
-      </div>
-
+    <AdminNavbar tab1hover="nohover" tab2hover="tab" tab3hover="tab" tab4hover="tab" tab1="gray" tab2="#012169" tab3="#012169" tab4="#012169" title2="EDIT BUS" />
+      
       <Container>
         <Typography sx={{ padding: 2, fontWeight: 900 }}>1:  ENTER THE BUS DETAILS</Typography>
 

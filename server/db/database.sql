@@ -36,7 +36,8 @@ CREATE TABLE owners(
    birthday TEXT ,
    gender TEXT ,
    matrialstatus TEXT,
-   image1 TEXT 
+   image1 TEXT ,
+  blocked BOOLEAN NOT NULL
  ) ;
 
  CREATE TABLE busdetails(

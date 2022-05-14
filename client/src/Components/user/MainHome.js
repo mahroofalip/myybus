@@ -11,7 +11,7 @@ const MainHome = () => {
       <Navbar />
       <SearchBar />
 
-      <Container align={"center"}>
+      <Container>
 
         <BusList />
 

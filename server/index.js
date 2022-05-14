@@ -142,7 +142,7 @@ app.post("/admin/addbus", verifyBlock, async (req, res) => {
   req.body.depTime = moment(req.body.depTime).format();
 
   req.body.arrivTime = moment(req.body.arrivTime).format();
- 
+
   const permit = {
     image: req.body.permit,
   };
@@ -574,7 +574,7 @@ app.post('/admin/report', async (req, res) => {
 
   const { rows } = await db.get(`select DISTINCT ON (depdate) * from tripdetails where owner_id=${ownerId} `)
 
-  let passangers = await db.get('SELECT * FROM passangers where status=1')
+  let passangers = await db.get('SELECT * FROM passangers where status=2 OR status=1')
 
   if (passangers.rows[0]) {
 
@@ -664,7 +664,7 @@ app.post("/user/otp/verify", (req, res) => {
       if (verification.valid) {
         let hashedUserPassword = await bcrypt.hash(USERDATA.Password, 10);
         const newUser = await db.get(
-          "INSERT INTO users(name,email,password,mobile,status,birthday,gender,matrialstatus,image1) values($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
+          "INSERT INTO users(name,email,password,mobile,status,birthday,gender,matrialstatus,image1,blocked) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *",
           [
             USERDATA.Name,
             USERDATA.Email,
@@ -674,7 +674,8 @@ app.post("/user/otp/verify", (req, res) => {
             "not updated",
             "not updated",
             "not updated",
-            "not updated"
+            "not updated",
+            false
           ]
         );
         console.log("FORM SUCCESSFULLY SUBMITTED");
@@ -851,7 +852,7 @@ app.post('/user/google/authentication', (req, res) => {
 
         let hashedUserPassword = await bcrypt.hash(password, 10);
         const newUser = await db.get(
-          "INSERT INTO users(name,email,password,mobile,status,birthday,gender,matrialstatus,image1) values($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
+          "INSERT INTO users(name,email,password,mobile,status,birthday,gender,matrialstatus,image1,blocked) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *",
           [
             newUserName,
             newUserEmail,
@@ -861,7 +862,8 @@ app.post('/user/google/authentication', (req, res) => {
             "not updated",
             "not updated",
             "not updated",
-            "not updated"
+            "not updated",
+            false
           ]
         );
 
@@ -1400,7 +1402,7 @@ app.post('/admin/dashboard/bookings', async (req, res) => {
   date = moment(date).format('lll')
 
   date = date.slice(0, 3)
- 
+
 
 
 
@@ -1444,15 +1446,353 @@ app.post('/admin/dashboard/bookings', async (req, res) => {
   let upcoming = coming.length
   let completed = complete.length
   let total = Total.rows.length
- 
-  res.json({ cancelled, upcoming, completed, total, totalErnings,totcancel })
+
+  res.json({ cancelled, upcoming, completed, total, totalErnings, totcancel })
 })
 
 
-app.post('/admin/dashboard/barchart',(req,res)=>{
+app.post('/admin/dashboard/barchart', async (req, res) => {
+  const { owner_id } = req.body
+  let Total = await db.get(`select * from passangers where  owner_id = $1 AND status=$2`, [owner_id, 2])
+  const monthlyIncomeGraph = (month) => {
 
-  console.log(req.body);
+    let array = []
+    let totalErnigns = 0
 
 
+    Total.rows.map((row, index) => {
+      let ltr = row.trip_date.slice(0, 3).trim()
+      if (month === ltr) {
+
+        totalErnigns += row.total
+        let expense = (totalErnigns / 100) * 10
+        let profit = totalErnigns - expense
+        console.log(row);
+        array[0] = month
+        array[1] = totalErnigns
+        array[2] = parseInt(expense)
+        array[3] = parseInt(profit)
+      }
+      return
+
+    })
+
+    if (array[0]) {
+      return array
+    }
+
+
+
+  }
+
+  const data = []
+
+  let jan = "Jan"  //1
+  let feb = "Feb"  //2
+  let mar = "Mar"  //3
+  let apr = "Apr"  //4
+  let jul = "Jul"  //5
+  let aug = "Aug"  //6
+  let sep = "Sep"  //7
+  let oct = "Oct"  //8
+  let nov = "Nov"  //9
+  let dec = "Dec"  //10
+  let jun = "Jun"  //11
+  let may = "May"  //12
+
+  for (let i = 0; i <= 12; i++) {
+
+    if (i === 0) {
+      data.push(["Monthly Income", "Total Earnings", "Expenses", "Profit"])
+    }
+
+    if (i === 1) {
+      let value = monthlyIncomeGraph(jan)
+      if (value) {
+        data.push(value)
+      }
+
+    }
+    if (i === 2) {
+      let value = monthlyIncomeGraph(feb)
+      if (value) {
+        data.push(value)
+      }
+
+    }
+    if (i === 3) {
+      let value = monthlyIncomeGraph(mar)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 4) {
+      let value = monthlyIncomeGraph(apr)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 5) {
+      let value = monthlyIncomeGraph(may)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 6) {
+      let value = monthlyIncomeGraph(jun)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i == 7) {
+      let value = monthlyIncomeGraph(jul)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 8) {
+      let value = monthlyIncomeGraph(aug)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 9) {
+      let value = monthlyIncomeGraph(sep)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 10) {
+      let value = monthlyIncomeGraph(oct)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 11) {
+      let value = monthlyIncomeGraph(nov)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 12) {
+      let value = monthlyIncomeGraph(dec)
+      if (value) {
+        data.push(value)
+      }
+    }
+
+  }
+  console.log(data);
+  res.json({ data: data })
+
+})
+
+app.post('/super/admin/dashboard', async (req, res) => {
+
+  let Companies = await db.get(`select * from owners`)
+  let Buses = await db.get(`select * from busdetails`)
+  let Users = await db.get(`select * from users`)
+  let Profit = await db.get(`select * from passangers`)
+  let Top_Companies = await db.get(`SELECT owner_id,COUNT(*) AS "Number" 
+  FROM passangers 
+  GROUP BY owner_id ORDER BY COUNT(*) DESC`)
+
+  let Top_Three_company = []
+
+  for (let i = 0; i < Top_Companies.rows.length; i++) {
+
+    let company = await db.get(`select * from owners where owner_id=${Top_Companies.rows[i].owner_id}`)
+
+    let obj = {
+      owner_id: Top_Companies.rows[i].owner_id,
+      number_of_seat: parseInt(Top_Companies.rows[i].Number),
+      company: company.rows[0].company
+    }
+
+    Top_Three_company.push(obj)
+
+  }
+
+
+  let totProfit = 0
+  for (let i = 0; i < Profit.rows.length; i++) {
+    let prize = Profit.rows[i].total
+    let perce10 = (prize / 100) * 10
+    totProfit = totProfit + perce10
+
+  }
+
+  totProfit = parseInt(totProfit)
+  let totaCompnies = Companies.rows.length
+  let totalBuses = Buses.rows.length
+  let totalUsers = Users.rows.length
+  res.json({ totaCompnies, totalBuses, totalUsers, totProfit, Top_Three_company })
+})
+
+app.post('/super/admin/dashboard/barchart', async (req, res) => {
+
+  let Total = await db.get(`select * from passangers where status=2`)
+  const monthlyIncomeGraph = (month) => {
+
+    let array = []
+    let totalErnigns = 0
+
+
+    Total.rows.map((row, index) => {
+      let ltr = row.trip_date.slice(0, 3).trim()
+      if (month === ltr) {
+
+        totalErnigns += row.total
+        let expense = (totalErnigns / 100) * 90
+        let profit = totalErnigns - expense
+        console.log(row);
+        array[0] = month
+        array[1] = totalErnigns
+        array[2] = parseInt(expense)
+        array[3] = parseInt(profit)
+      }
+      return
+
+    })
+
+    if (array[0]) {
+      return array
+    }
+
+
+
+  }
+
+  const data = []
+
+  let jan = "Jan"  //1
+  let feb = "Feb"  //2
+  let mar = "Mar"  //3
+  let apr = "Apr"  //4
+  let jul = "Jul"  //5
+  let aug = "Aug"  //6
+  let sep = "Sep"  //7
+  let oct = "Oct"  //8
+  let nov = "Nov"  //9
+  let dec = "Dec"  //10
+  let jun = "Jun"  //11
+  let may = "May"  //12
+
+  for (let i = 0; i <= 12; i++) {
+
+    if (i === 0) {
+      data.push(["Monthly Income", "Total Earnings", "Expenses", "Profit"])
+    }
+
+    if (i === 1) {
+      let value = monthlyIncomeGraph(jan)
+      if (value) {
+        data.push(value)
+      }
+
+    }
+    if (i === 2) {
+      let value = monthlyIncomeGraph(feb)
+      if (value) {
+        data.push(value)
+      }
+
+    }
+    if (i === 3) {
+      let value = monthlyIncomeGraph(mar)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 4) {
+      let value = monthlyIncomeGraph(apr)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 5) {
+      let value = monthlyIncomeGraph(may)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 6) {
+      let value = monthlyIncomeGraph(jun)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i == 7) {
+      let value = monthlyIncomeGraph(jul)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 8) {
+      let value = monthlyIncomeGraph(aug)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 9) {
+      let value = monthlyIncomeGraph(sep)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 10) {
+      let value = monthlyIncomeGraph(oct)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 11) {
+      let value = monthlyIncomeGraph(nov)
+      if (value) {
+        data.push(value)
+      }
+    }
+    if (i === 12) {
+      let value = monthlyIncomeGraph(dec)
+      if (value) {
+        data.push(value)
+      }
+    }
+
+  }
+ 
+  res.json({ data })
+ 
+
+
+})
+
+
+app.get('/super/admin/localusers',async(req,res)=>{
+  let {rows} = await db.get('select * from users')
+  console.log(rows);
+ res.json({rows})
+})
+
+
+app.put('/super/admin/blockUser',(req,res)=>{
+  console.log("BLOCK USESRS ....................................    ",req.body);
+  db.get('UPDATE users SET blocked = $1  WHERE owner_id = $2',
+  [
+    true,
+    req.body.id
+  ])
+
+})
+
+
+
+app.put('/super/admin/unBlockUser', (req, res) => {
+  console.log("UNBLOCK USESRS ....................................    ",req.body);
+  db.get('UPDATE users SET blocked = $1  WHERE owner_id = $2',
+    [
+      false,
+      req.body.id
+    ])
 
 })

@@ -28,6 +28,7 @@ import Tripdetails from "./Components/admin/tripdetails/Tripdetails"
 import SeatLayout from "./Components/admin/seatlayout/SeatLayout";
 import AdminReport from "./Components/admin/report/Report";
 import SuperAdminReport from "./Components/super-admin/report/SalesReport"
+import LocalUsers from "./Components/super-admin/user/LocalUsers"
 function App() {
 
   return (
@@ -61,6 +62,7 @@ function App() {
           <Route path="/admin/seatLayout" element={<SeatLayout />} />
           <Route path="/admin/incomreport/:ownerId" element={<AdminReport />} />
           <Route path="/super/admin/report" element={<SuperAdminReport />} />
+          <Route path="/super/admin/LocalUsers" element={<LocalUsers />} />
         </Routes>
       </ConfirmProvider>
     </BrowserRouter>

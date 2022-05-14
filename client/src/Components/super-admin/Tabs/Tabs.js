@@ -60,16 +60,19 @@ const Tabs = (props) => {
     }
   };
 
-  const handleManageOwners = () => {
+  const handleManageUsers = () => {
+    navigate('/super/admin/LocalUsers')
+  }
+  const handleManageCompanies = () => {
     navigate('/super/admin/managecompanies')
   }
-  const handleManageUsers = () => {
+  const handleManageOwners = () => {
     navigate('/super/admin/ManageUsers')
   }
   const handleDashbord = () => {
     navigate('/super/admin/home')
   }
-  const handleReport =() => {
+  const handleReport = () => {
     navigate('/super/admin/report')
   }
 
@@ -79,18 +82,21 @@ const Tabs = (props) => {
 
       <div>
         <Grid sx={{ backgroundColor: '#012169', marginTop: 0 }} container spacing={3}>
-          <Grid onClick={handleDashbord} className={props.tab1hover} sx={{ backgroundColor: props.tab1, border: "solid white" }} item xs={12} sm={2} md={3}>
-            <strong style={{ color: 'white', margin: 40 }}>DASHBOARD</strong>
+          <Grid onClick={handleDashbord} className={props.tab1hover} sx={{ backgroundColor: props.tab1, border: "solid white" }} item xs={12} sm={2} md={2}>
+            <strong style={{ color: 'white' }}>DASHBOARD</strong>
           </Grid>
 
-          <Grid onClick={handleManageOwners} className="tab" sx={{ color: '#fff', backgroundColor: props.tab2, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
-            <strong className={props.tab2hover} style={{ margin: 40, }} >MANAGE COMPANIES</strong>
+          <Grid onClick={handleManageCompanies} className="tab" sx={{ color: '#fff', backgroundColor: props.tab2, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
+            <strong className={props.tab2hover}>MANAGE COMPANIES</strong>
           </Grid>
-          <Grid onClick={handleManageUsers} className={props.tab3hover} sx={{ color: '#fff', backgroundColor: props.tab3, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
-            <strong style={{ margin: 40, }}>MANAGE USERS</strong>
+          <Grid onClick={handleManageOwners} className={props.tab3hover} sx={{ color: '#fff', backgroundColor: props.tab3, border: "solid white", cursor: "pointer" }} item xs={12} sm={2.3} md={2.3}>
+            <strong >MANAGE OWNERS</strong>
           </Grid>
-          <Grid onClick={handleReport} className={props.tab4hover} sx={{ color: '#fff', backgroundColor: props.tab4, border: "solid white", cursor: "pointer" }} item xs={12} sm={3} md={3}>
-            <strong style={{ margin: 40, }}>REPORTS</strong>
+          <Grid onClick={handleManageUsers} className={props.ta4bhover} sx={{ color: '#fff', backgroundColor: props.tab4, border: "solid white", cursor: "pointer" }} item xs={12} sm={2.3} md={2.3}>
+            <strong >MANAGE USERS</strong>
+          </Grid>
+          <Grid onClick={handleReport} className={props.tab5hover} sx={{ color: '#fff', backgroundColor: props.tab5, border: "solid white", cursor: "pointer" }} item xs={12} sm={2.4} md={2.4}>
+            <strong >REPORTS</strong>
           </Grid>
         </Grid>
       </div>

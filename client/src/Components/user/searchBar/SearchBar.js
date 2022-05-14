@@ -147,13 +147,11 @@ function SearchBar() {
     ):(
     <StyledToolbar style={outerWrapper}>
       <Box
-        style={{
-          backgroundColor: "#fff",
-          padding: 50,
-          border: 10,
-          borderRadius: 20,
-        }}
         sx={{
+          backgroundColor: "#fff",
+          padding: "30px",
+         
+          borderRadius: 20,
           flexGrow: 1,
           marginLeft: { md: "100px" },
           marginRight: { md: "100px" },

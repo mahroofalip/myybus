@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "../forms.css";
 import { useNavigate } from "react-router-dom";
-
+import jwt_decode from "jwt-decode";
 function Signup() {
   const { useState } = React;
 
@@ -116,7 +116,9 @@ function Signup() {
           localStorage.setItem("token", res.data.user);
 
           if (res.data.user) {
-            navigate("/admin/home");
+            var decoded = jwt_decode(res.data.user);
+              navigate("/admin/home/"+decoded.id);
+          
           } else {
             setExist("  This user already exist")
           }

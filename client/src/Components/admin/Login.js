@@ -4,7 +4,7 @@ import axios from "axios";
 import '../../Components/forms.css'
 import { useNavigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
-
+import jwt_decode from "jwt-decode";
 import Backdrop from '@mui/material/Backdrop';
 function Login() {
   const navigate = useNavigate();
@@ -18,6 +18,7 @@ function Login() {
   const [warning, setWarning] = useState(false)
   const [eye, seteye] = useState(true);
   const [pass, setpass] = useState("password");
+  const [owner_id, setOwnerid] = useState("");
   console.log(Email, Password);
   console.log(Email, Password);
 
@@ -93,7 +94,8 @@ function Login() {
               setWarning("This Account Is Blocked")
             } else {
               localStorage.setItem("token", res.data.user);
-              navigate("/admin/home");
+              var decoded = jwt_decode(res.data.user);
+              navigate("/admin/home/" + decoded.id);
             }
 
 

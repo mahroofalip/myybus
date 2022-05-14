@@ -28,10 +28,10 @@ const AdminHome = () => {
   const [upcoming, setUpcoming] = useState(0)
   const [completed, setCompleted] = useState(0)
   const [cancelled, setCancelled] = useState(0)
-  const [totalearnings,setTotalErnings]=useState(0)
-  const [totcancel,setTotalCancel]=useState(0)
+  const [totalearnings, setTotalErnings] = useState(0)
+  const [totcancel, setTotalCancel] = useState(0)
   const [total, setTotal] = useState(0)
-
+  const [data, setData] = useState([])
   const { owner_id } = useParams()
 
   useEffect(() => {
@@ -45,8 +45,8 @@ const AdminHome = () => {
         setTotal(res.data.total)
         setTotalErnings(res.data.totalErnings)
         setTotalCancel(res.data.totcancel)
-        axios.post("http://localhost:3001/admin/dashboard/barchart", { owner_id }).then(()=>{
-          
+        axios.post("http://localhost:3001/admin/dashboard/barchart", { owner_id }).then((res2) => {
+          setData(res2.data.data)
         })
       }
       )
@@ -57,26 +57,11 @@ const AdminHome = () => {
 
 
 
-  const data = [
-    ["Monthly Income", "Total Earnings", "Expenses", "Profit"],
-    ["jan", 1000, 400, 200],
-    ["feb", 1170, 460, 250],
-    ["mar", 660, 1120, 300],
-    ["april", 1030, 540, 350],
-    ["may", 1000, 400, 200],
-    ["june", 1170, 460, 250],
-    ["julay", 660, 1120, 300],
-    ["aug", 1030, 540, 350],
-    ["sep", 1000, 400, 200],
-    ["oct", 1170, 460, 250],
-    ["nov", 660, 1120, 300],
-    ["dec", 1030, 540, 350],
-  ];
 
   const options = {
     chart: {
       title: "Company Performance",
-      subtitle: "Total Earnings, Expenses, and Profit: 2014-2017",
+      subtitle: "Total Earnings, Expenses, and Profit",
     },
   };
 
@@ -132,13 +117,13 @@ const AdminHome = () => {
               </div>
               <div style={{ height: "100px", backgroundColor: "#545d73", marginBottom: "10px", padding: "20px" }}>
                 <h2 style={{ color: "white" }}>Total Earnings</h2>
-                <h2 style={{ color: "white" }}>{totalearnings}</h2> 
+                <h2 style={{ color: "white" }}>{totalearnings}</h2>
               </div>
               <div style={{ height: "100px", backgroundColor: "#606b85", marginBottom: "10px", padding: "20px" }}>
                 <h2 style={{ color: "white" }}>Cancelled Bookings</h2>
                 <h2 style={{ color: "white" }}>{totcancel}</h2>
               </div>
-              
+
 
             </Grid>
 
