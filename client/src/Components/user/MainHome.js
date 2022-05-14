@@ -16,7 +16,7 @@ const MainHome = () => {
         <BusList />
 
       </Container>
-
+    
 
 
 

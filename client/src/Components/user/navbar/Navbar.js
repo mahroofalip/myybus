@@ -23,6 +23,7 @@ function Navbar() {
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [email, setEmail] = useState("")
+  const [name,setName] = useState("")
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -32,11 +33,15 @@ function Navbar() {
     let token = localStorage.getItem("userToken")
     if (token) {
       var decoded = jwt_decode(token);
-      if (decoded.email) setEmail(decoded.email)
+      console.log("THIS IS USER INFORMATION .....", decoded)
+      if (decoded.email) {
+        setEmail(decoded.email)
+       
+        setName(decoded.name)
     } else {
       setEmail("")
     }
-
+  }
 
   }, [email])
 
@@ -48,7 +53,7 @@ function Navbar() {
     } else {
       navigate("/login");
     }
-  
+
 
   }
 
@@ -58,19 +63,19 @@ function Navbar() {
   };
 
   const navigateTo = (e) => {
-   
-  if(e.target.innerText==='Profile'){
-    let token = localStorage.getItem("userToken")
-    if(token){
-      var decoded = jwt_decode(token);
-      const {id}=decoded
-      console.log(id,'/////////////////////////////ppp');
-      navigate("/user/profile/"+id);
-    }else{
-      navigate("/login");
+
+    if (e.target.innerText === 'Profile') {
+      let token = localStorage.getItem("userToken")
+      if (token) {
+        var decoded = jwt_decode(token);
+        const { id } = decoded
+      
+        navigate("/user/profile/" + id);
+      } else {
+        navigate("/login");
+      }
+
     }
-  
-  }
 
 
     if (e.target.innerText === 'Account') {
@@ -88,7 +93,7 @@ function Navbar() {
 
   }
 
-  const home=()=>{
+  const home = () => {
     navigate("/");
   }
 
@@ -103,25 +108,20 @@ function Navbar() {
 
             <h2 className="mybus">
 
-            <Button onClick={home} variant="outlined" className="letterStyle"> <span className="letterStyle">MYBUS</span></Button>
-             
+              <Button onClick={home} variant="outlined" className="letterStyle"> <span className="letterStyle">MYBUS</span></Button>
+
 
             </h2>
           </Box>
 
 
           <TourIcon />
-          <div style={{ marginRight: "20px" }}>
+          <div style={{ marginRight: "12px" }}>
             <h5 className="mybus">
               <Button onClick={myTrip} variant="outlined" className="letterStyle">MYTRIPS</Button>
             </h5>
           </div>
-          <Box sx={{ flexGrow: 0 }}>
-
-
-
-            <span style={{ marginRight: 20 }}>{email ? email : ""}</span>
-            <Tooltip title="Open settings">
+          <Box sx={{ flexGrow: 0 }}><span style={{ marginRight: 20 }}>{name?name:""}</span><Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="Remy Sharp" src="" />
               </IconButton>
